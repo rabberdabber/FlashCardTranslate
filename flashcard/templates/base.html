@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta http-equiv="refresh" content="60">
+      <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"> 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css"> 
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Nova+Flat" >
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
+
+    <title>Todo App</title>
+    <style>
+      .hidden {
+        display: none;
+      }
+      ul {
+        pagination-style: none;
+        padding-left: 0;
+        width: 200px;
+      }
+      li {
+        clear: both;
+      }
+      .todo-pagination {
+        margin-top: 20px;
+      }
+
+      h1,p { 
+        font-family: "Nova Flat";
+      }
+
+      li button {
+        -webkit-appearance: none;
+        border: none;
+        outline: none;
+        color: red;
+        float: right;
+        cursor: pointer;
+        font-size: 16px;
+      }
+      .paginations-wrapper, .pagination-wrapper {
+        display: inline-block;
+        vertical-align: top;
+      }
+      .row-header {
+        margin: 0px auto;
+        padding: 0px auto;
+      }
+
+      .row-content {
+          margin: 0px auto;
+          border-bottom: 1px ridge;
+          border-bottom-color: black;
+      }
+
+      header {
+        background-color: #f1f1f1;
+        padding: 20px;
+        text-align: right;
+      }
+
+      .footer {
+          /*position: absolute;
+          bottom: 0;
+          width: 100%;
+          height: 30px;*/
+          margin: 0px auto;
+          border-top: 1px ridge;
+          border-top-color: black;
+          background-color: #d1c4E9; 
+          height: 30px;
+      }
+
+      .jumbotron {
+          color: black;
+          background: #d1c4E9;
+          margin: 0px auto;
+          border-bottom : 1px ridge;
+          border-bottom-color: black;
+      }
+
+      .address {
+          font-size: 80%;
+          margin: 0px;
+          color: #0f0f0f;
+      }
+
+      body {
+          padding:  0px 0px 0px 0px;
+          z-index: 0;
+          background-color: #d1c4E9;
+      }
+
+      .navbar-light{
+          background-color: #d1c4E9;
+          border-bottom: 1px ridge;
+          border-bottom-color: black;
+      }
+
+      form {
+        background-color: #d1c4E9;
+      }
+
+      .navbar-nav > li {
+        margin-left: 30px;
+        margin-right: 30px;
+      }
+      
+      .front, .back {
+        width:100%;
+        min-height:300px;
+        display: table;
+      }
+
+      .front h3, .back p {
+        display: table-cell;
+        vertical-align: middle;
+        text-align: center;
+      }
+
+      .fast {
+        animation-duration: .5s;
+      }
+      .flashcard {
+        /*border: 1px solid black;
+        border-color: black;*/
+       /* cursor:pointer;*/
+        width: 25%;
+      }
+
+
+    </style>
+  </head>
+  <body>
+   
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script> 
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script> 
+    <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
+  
+    <!-- NAVIGATION BAR-->
+     <nav class="navbar navbar-light navbar-expand-sm fixed-to">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
+                <span class="navbar-toggler-icon"> </span>
+            </button>
+            <a class="navbar-brand mr-auto" href="#">FlashCards </a>
+            <span class="iconify" data-icon="ph:cards-duotone"></span>
+            <div class="collapse navbar-collapse" id="Navbar">
+      
+              {%block navigator%}
+              <ul class="navbar-nav mr-auto">
+                <li class="nav-item active"><a class="nav-link" href="#"><span class="fa fa-home fa-lg"> </span><small>Home</small></a></li>
+                <li class="nav-item"><a class="nav-link" href="../contact.html"><span class="fa fa-info fa-lg"></span><small> Contact</small></a></li>
+              </ul>
+              <ul class="navbar-nav ml-auto"> 
+                <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-sign-in fa-lg"></span><small>Login</small></a></li>
+                <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-user-plus fa-lg"></span><small>SignUp</small></a></li>
+              </ul>
+              {%endblock%}
+
+              
+            </div>
+
+        </div>
+
+    </nav>
+
+  
+    <script>
+      $('.navbar-nav').on('click','li', function(){
+        $(this).addClass('active').siblings().removeClass('active');
+      });
+    </script>
+
+   
+      {% block content %}
+        <header class="jumbotron">
+            <div class="container">
+                <div class="row row-header">
+                    <div class="col-12 col-sm-6 text-center">
+                        <h1>English to Korean FlashCards</h1>
+                        <p> Click any Card to view the English word in Korean</p>
+                    <div class="col-12 col-sm">
+                </div>
+            </div>
+        </header>
+        
+        <br>
+        <form action="create" method="POST" id="todo-form">
+          <div class="container">
+
+           <!-- <div class="row">
+              <div class="form-group col-12">
+                <label for="description">Create Task:</label>
+                <input type="text" class="form-control" id="description" name="description" placeholder="Description">
+                <button type="submit" class="btn btn-primary" id="todo-button">Create Task</button>
+              </div>
+        
+            </div>-->
+            <div class="form-group row">
+              <div class="col-md-2">
+                <label for="description"><strong>Create Task:</strong></label>
+              </div>
+              <div class="col-md-6">
+                  <div class="form-check">
+                      <input type="text" class="form-control" id="description" name="description" placeholder="Description"> 
+                  </div>
+              </div>
+              <div class="col-md-4">
+                  <button type="submit" class="btn btn-primary" id="todo-button">Create Task</button> 
+              </div>
+            </div>
+            
+
+          </div>
+        </form>
+        
+      <div class="container">
+        {% for i in range(2)%}
+            <div class="row">
+              {% for j in range(4) %}
+                {% if (todos|length) > (j + (i * 4)) %}
+                  <div class="flashcard">
+                    <button class="delete-todo" data-id="{{ todos[j + (i * 4)].id }}">&cross;</button>
+                    <div class="p-3 front border">
+                      <h3>{{todos[j + (i * 4)].description}}</h3>
+                    </div>
+                    <div class="p-3 back border">
+                      <p>blank for now</p>
+                    </div>
+                 </div>
+
+                {% else%}
+                  <div class="flashcard hidden">
+                    <button>&cross;</button>
+                    <div class="p-3 front border">
+                      <h3></h3>
+                    </div>
+                    <div class="p-3 back border">
+                      <p></p>
+                    </div>
+                  </div>
+
+                {% endif%}
+                
+              {%endfor%}
+              </div>
+        {%endfor%}
+      </div>
+
+        <br>
+        <br>
+        <!-- next page tokens-
+        {% if next_page_token %}
+          <nav>
+            <div class="container">
+              <div class="row">
+                <div class="col-12 offset-10">
+                  <a href="?page_token={{ next_page_token }}"><span class="fa fa-sign-in fa-lg"></span> Next Page</a>
+                </div>
+              </div>
+          </nav>
+        {% endif %} -->
+
+        <!-- Pagination Links-->
+        <div class="text-center">
+            <a href="{{ url_for('crud.list', page=pagination.prev_num) }}"
+              class="btn btn-outline-dark 
+              {% if pagination.page == 1 or pagination.pages == 0  %}disabled{% endif %}">
+                &laquo;
+            </a>
+        <!-- Loop through the number of pages to display a link for each-->
+          {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+            {% if page_num %}
+        <!-- Check for the active page and set the link to "Active"-->
+                    {% if pagination.page == page_num %}
+                    <a href="{{ url_for('crud.list', page=page_num) }}"
+                      class="btn btn-dark">
+                        {{ page_num }}
+                    </a>
+                    {% else %}
+                    <a href="{{ url_for('crud.list', page=page_num) }}"
+                      class="btn btn-outline-dark">
+                        {{ page_num }}
+                    </a>
+                    {% endif %}
+                {% else %}
+                    ...
+                {% endif %}
+            {% endfor %}
+            <a href="{{ url_for('crud.list', page=pagination.next_num) }}"
+              class="btn btn-outline-dark 
+              {% if pagination.page == pagination.pages or pagination.pages == 0 %}disabled{% endif %}">
+                &raquo;
+            </a>
+        </div>
+        {% if pagination.pages > 0%}
+        <p class="text-center mt-3">
+          Showing page {{ pagination.page }} of {{ pagination.pages }}
+        </p>
+        {% endif %}
+            
+        <br>
+        <br>
+
+        <script>
+          deleteBtns = document.querySelectorAll(".delete-todo");
+          for (let i = 0; i < deleteBtns.length; i++) {
+            const deleteBtn = deleteBtns[i];
+            deleteBtn.onclick = function(e) {
+              console.log("Delete event: ", e);
+              const todoId = e.target.dataset.id;
+              fetch('/todos/'+ todoId + '/delete',{
+                method: 'DELETE'
+              })
+              .then(function() {
+                var url = '/todos/?page=1';
+                if (deleteBtns.length > 1){
+                  url = '/todos/?page={{ pagination.page }}';
+                }
+                else if({{ pagination.page }} > 1){
+                  url = '/todos/?page={{ pagination.page - 1 }}';
+                }
+                
+                window.location.replace(url);
+              });
+            };
+          }
+
+        </script>
+
+      {% endblock %}
+      
+    </div>
+
+     <footer class="footer">
+       <br>
+        <div class="container">
+            <div class="row">             
+                <div class="col-12">
+                    <h5>Contact Us</h5>
+                    <address class="address">
+                    <div class="btn-group row" role="group">
+                      <a role="button" class="btn btn-primary" href="tel:+821021879779"><i class="fa fa-phone"></i> Call</a>
+                      <a role="button" class="btn btn-success" href="mailto:bereket@kakao.com"><i class="fa fa-envelope-o"></i> Email</a>
+                    </div>
+                </div>
+
+                <div class="col-12 text-center">             
+                  <div class="col-auto">
+                      <p>© Copyright 2022 rabberdabber</p>
+                      <a> FlashCards<span class="iconify" data-icon="ph:cards-duotone"></span></a>
+                     
+                  </div>
+                </div>
+            </div>
+        </div>
+         
+    </footer>
+    <script src="{{url_for('static',filename='script.js')}}"></script>
+  </body>
+</html>

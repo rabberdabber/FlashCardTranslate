@@ -190,22 +190,14 @@
         <br>
         <form action="create" method="POST" id="todo-form">
           <div class="container">
-
-           <!-- <div class="row">
-              <div class="form-group col-12">
-                <label for="description">Create Task:</label>
-                <input type="text" class="form-control" id="description" name="description" placeholder="Description">
-                <button type="submit" class="btn btn-primary" id="todo-button">Create Task</button>
-              </div>
-        
-            </div>-->
+ 
             <div class="form-group row">
               <div class="col-md-2">
-                <label for="description"><strong>Create Task:</strong></label>
+                <label for="word"><strong>Create Task:</strong></label>
               </div>
               <div class="col-md-6">
                   <div class="form-check">
-                      <input type="text" class="form-control" id="description" name="description" placeholder="Description"> 
+                      <input type="text" class="form-control" id="word" name="word" placeholder="word"> 
                   </div>
               </div>
               <div class="col-md-4">
@@ -225,10 +217,10 @@
                   <div class="flashcard">
                     <button class="delete-todo" data-id="{{ todos[j + (i * 4)].id }}">&cross;</button>
                     <div class="p-3 front border">
-                      <h3>{{todos[j + (i * 4)].description}}</h3>
+                      <h3>{{todos[j + (i * 4)].word}}</h3>
                     </div>
                     <div class="p-3 back border">
-                      <p>blank for now</p>
+                      <p>{{todos[j + (i * 4)].word_translation}}</p>
                     </div>
                  </div>
 

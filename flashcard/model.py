@@ -20,10 +20,11 @@ def from_sql(row):
     data.pop('_sa_instance_state')
     return data
 
-class Todo(db.Model):
+class Text(db.Model):
     __tablename__ = "todos"
     id = db.Column(db.Integer, primary_key=True)
-    description = db.Column(db.String(), nullable=False)
+    word = db.Column(db.String(), nullable=False)
+    word_translation = db.Column(db.String(),nullable=False)
     completed = db.Column(db.Boolean, nullable=False, default=False)
 
     def __repr__(self):
@@ -41,18 +42,15 @@ class Todo(db.Model):
     return (todos, next_page)'''
  
 def list(page,limit=8):
-    pagination = Todo.query.paginate(page=page,per_page=limit)
+    pagination = Text.query.paginate(page=page,per_page=limit)
     todos_list = builtin_list(map(from_sql, pagination.items))
     return pagination,todos_list
         
-    
 
-
-
-def create_todo(description):
+def create_todo(data):
     error = False
     try:
-        todo = Todo(description=description)
+        todo = Text(**data)
         db.session.add(todo)
         db.session.commit()
     except:
@@ -69,7 +67,7 @@ def read(todo_id):
 def update_todo(todo_id,completed):
     todo = None
     try:
-        todo = Todo.query.get(todo_id)
+        todo = Text.query.get(todo_id)
         print('Todo: ', todo)
         todo.completed = completed
         db.session.commit()
@@ -84,7 +82,7 @@ def update_todo(todo_id,completed):
 def delete_todo(todo_id):
     error = False
     try:
-        todo = Todo.query.get(todo_id)
+        todo = Text.query.get(todo_id)
         db.session.delete(todo)
         db.session.commit()
     except:

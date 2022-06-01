@@ -1,8 +1,11 @@
 from crypt import methods
 from . import model
 from flask import Blueprint, jsonify, redirect, render_template, request, url_for, json, abort
+from .naver_credentials import headers
+import requests
 
 crud = Blueprint('crud',__name__)
+url = "https://openapi.naver.com/v1/papago/n2mt"
 
 @crud.route("/")
 def list():
@@ -25,17 +28,23 @@ def view(id):
 
 @crud.route('/create', methods=['POST'])
 def create():
-   print("created")
-   data = {}
-   description = request.form.get('description')
-   print(description)
-   data['description'] = description
-   failed = model.create_todo(description)
-  
-   if failed:
-       abort(500)
-   else:
-       return redirect(url_for('.list'))
+    print("created")
+    data = {}
+    
+    data['word'] = request.form.get('word')
+    word = data['word']
+    querystring = {"source":"en","target":"ko","text":word}
+ 
+    response = requests.request("POST", url, headers=headers, params=querystring)
+
+    data['word_translation'] = response.json().get('message').get('result').get('translatedText')
+    print(data['word_translation'])
+    failed = model.create_todo(data)
+   
+    if failed:
+        abort(500)
+    else:
+        return redirect(url_for('.list'))
 
 @crud.route('/<todo_id>/set-completed', methods=['POST'])
 def update(todo_id):

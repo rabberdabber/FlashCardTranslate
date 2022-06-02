@@ -15,6 +15,7 @@
         display: none;
       }
       ul {
+        list-style: none;
         pagination-style: none;
         padding-left: 0;
         width: 200px;
@@ -22,6 +23,7 @@
       li {
         clear: both;
       }
+      
       .todo-pagination {
         margin-top: 20px;
       }
@@ -38,6 +40,10 @@
         float: right;
         cursor: pointer;
         font-size: 16px;
+      }
+      .lists-wrapper {
+        display: inline-block;
+        vertical-align: top;
       }
       .paginations-wrapper, .pagination-wrapper {
         display: inline-block;
@@ -92,8 +98,8 @@
           background-color: #d1c4E9;
       }
 
-      .navbar-light{
-          background-color: #d1c4E9;
+      .navbar-dark{
+          background-color: #32064A;
           border-bottom: 1px ridge;
           border-bottom-color: black;
       }
@@ -140,7 +146,7 @@
     <script src="https://code.iconify.design/2/2.2.1/iconify.min.js"></script>
   
     <!-- NAVIGATION BAR-->
-     <nav class="navbar navbar-light navbar-expand-sm fixed-to">
+     <nav class="navbar navbar-dark navbar-expand-sm fixed-to">
         <div class="container">
             <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#Navbar">
                 <span class="navbar-toggler-icon"> </span>
@@ -180,82 +186,148 @@
             <div class="container">
                 <div class="row row-header">
                     <div class="col-12 col-sm-6 text-center">
-                        <h1>English to Korean FlashCards</h1>
-                        <p> Click any Card to view the English word in Korean</p>
+                        <h1>Language FlashCards</h1>
+                        <p> Click any Card to view the translated word</p>
                     <div class="col-12 col-sm">
                 </div>
             </div>
         </header>
         
         <br>
-        <form action="create" method="POST" id="todo-form">
-          <div class="container">
- 
-            <div class="form-group row">
-              <div class="col-md-2">
-                <label for="word"><strong>Create Task:</strong></label>
+        <div class="container">
+          <div class="row lists-wrapper">
+            <label for="source-language target-language"> <p>Add Source and Target Language<p></label>
+             <form action="lists/create" method="POST" id="source-language"> 
+              <div class="col-6 float-left">
+                  <label for="source">Source:</label>
+                  <select class="form-control" name="source-language">
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="it">Italian</option>
+                    <option value="zh"> Simplified Chinese </option>
+                    <option value="ja">Japanese</option>
+                    <option value="ko">Korean</option>
+                    <option value="in">Indonesian</option>
+                    <option value="ru">Russian</option>
+                    <option value="th">Thai</option>
+                    <option value="vi">Vietnamese</option>
+                    <option value="zh-CHT">Traditional Chinese</option>
+                  </select>
               </div>
-              <div class="col-md-6">
-                  <div class="form-check">
-                      <input type="text" class="form-control" id="word" name="word" placeholder="word"> 
-                  </div>
+
+              <div class="col-6 float-right">
+                  <label for="target"><p>Target:</p></label>
+                  <select class="form-control" name="target-language">
+                    <option value="en">English</option>
+                    <option value="es">Spanish</option>
+                    <option value="fr">French</option>
+                    <option value="de">German</option>
+                    <option value="it">Italian</option>
+                    <option value="zh"> Simplified Chinese </option>
+                    <option value="ja">Japanese</option>
+                    <option value="ko">Korean</option>
+                    <option value="in">Indonesian</option>
+                    <option value="ru">Russian</option>
+                    <option value="th">Thai</option>
+                    <option value="vi">Vietnamese</option>
+                    <option value="zh-CHT">Traditional Chinese</option>
+                  </select>
               </div>
-              <div class="col-md-4">
-                  <button type="submit" class="btn btn-primary" id="todo-button">Create Task</button> 
+
+              <div class="col-6 float-right">
+                <button type="submit" class="btn btn-primary float-right">Submit</button>
               </div>
-            </div>
-            
+            </form>
+          </div>
+        </div>
+
+        <br>
+        <div class="container">
+          <div class="row">
+            <div class = "col-6"
+              <ul id="lists">
+                  {% for list in lists %}
+                    <li>
+                      <div class="col-10 float-left">
+                        <a href="{{url_for('crud.view',id=list.id)}}" class="list-group-item list-group-item-action" data-id="{{list.id}}"> {{list.name}} </a>
+                      </div>
+                      <div class="col-1 float-right">
+                        <button class="delete-list" data-id="{{ list.id }}">&cross;</button>
+                      </div>
+                    </li>
+                  {% endfor %}
+              </ul>
 
           </div>
-        </form>
-        
-      <div class="container">
+
+        </div class="col-6">
         {% for i in range(2)%}
             <div class="row">
-              {% for j in range(4) %}
+                {% for j in range(4) %}
                 {% if (todos|length) > (j + (i * 4)) %}
-                  <div class="flashcard">
+                    <div class="flashcard">
                     <button class="delete-todo" data-id="{{ todos[j + (i * 4)].id }}">&cross;</button>
                     <div class="p-3 front border">
-                      <h3>{{todos[j + (i * 4)].word}}</h3>
+                        <h3>{{todos[j + (i * 4)].word}}</h3>
                     </div>
                     <div class="p-3 back border">
-                      <p>{{todos[j + (i * 4)].word_translation}}</p>
+                        <p>{{todos[j + (i * 4)].word_translation}}</p>
                     </div>
-                 </div>
+                    </div>
 
                 {% else%}
-                  <div class="flashcard hidden">
+                    <div class="flashcard hidden">
                     <button>&cross;</button>
                     <div class="p-3 front border">
-                      <h3></h3>
+                        <h3></h3>
                     </div>
                     <div class="p-3 back border">
-                      <p></p>
+                        <p></p>
                     </div>
-                  </div>
+                    </div>
 
                 {% endif%}
                 
-              {%endfor%}
-              </div>
-        {%endfor%}
-      </div>
-
-        <br>
-        <br>
-        <!-- next page tokens-
-        {% if next_page_token %}
-          <nav>
-            <div class="container">
-              <div class="row">
-                <div class="col-12 offset-10">
-                  <a href="?page_token={{ next_page_token }}"><span class="fa fa-sign-in fa-lg"></span> Next Page</a>
+                {%endfor%}
                 </div>
-              </div>
-          </nav>
-        {% endif %} -->
+        {%endfor%}
+        </div>
+      </div>
+    </div>
 
+
+      
+        <script>
+         
+          deleteListBtns = document.querySelectorAll(".delete-list");
+
+          for (let i = 0; i < deleteListBtns.length; i++) {
+            const deleteBtn = deleteListBtns[i];
+            deleteBtn.onclick = function(e) {
+              console.log("Delete event: ", e);
+              const listId = e.target.dataset.id;
+
+              fetch('lists/'+ listId + '/delete',{
+                method: 'DELETE'
+              }).then(function() {
+                const item = e.target.parentElement.parentElement;
+                item.remove();
+                  document.getElementById("error").className = "hidden";
+                  window.location.reload(true);
+                })
+                .catch(function(e) {
+                  console.error(e);
+                  document.getElementById("error").className = "";
+                });
+            };
+          }
+        </script>
+       
+      {% endblock %}
+        
+      {% if pagination %}
         <!-- Pagination Links-->
         <div class="text-center">
             <a href="{{ url_for('crud.list', page=pagination.prev_num) }}"
@@ -293,37 +365,11 @@
           Showing page {{ pagination.page }} of {{ pagination.pages }}
         </p>
         {% endif %}
+      {% endif %}
             
         <br>
         <br>
 
-        <script>
-          deleteBtns = document.querySelectorAll(".delete-todo");
-          for (let i = 0; i < deleteBtns.length; i++) {
-            const deleteBtn = deleteBtns[i];
-            deleteBtn.onclick = function(e) {
-              console.log("Delete event: ", e);
-              const todoId = e.target.dataset.id;
-              fetch('/todos/'+ todoId + '/delete',{
-                method: 'DELETE'
-              })
-              .then(function() {
-                var url = '/todos/?page=1';
-                if (deleteBtns.length > 1){
-                  url = '/todos/?page={{ pagination.page }}';
-                }
-                else if({{ pagination.page }} > 1){
-                  url = '/todos/?page={{ pagination.page - 1 }}';
-                }
-                
-                window.location.replace(url);
-              });
-            };
-          }
-
-        </script>
-
-      {% endblock %}
       
     </div>
 

@@ -15,33 +15,59 @@ def list():
 
     todos, next_page_token = model.list(cursor=token)'''
     page = request.args.get('page', 1, type=int)
-    pagination,todos_list = model.list(page)
+    pagination,lists = model.list_categories(page)
 
     return render_template(
         "base.html",
-        todos=todos_list,
+        lists=lists,
+        todos=model.get_list(14).texts,
+        active_list= model.get_list(14),
+        pagination=pagination)
+
+@crud.route("/list/<int:id>")
+def view(id):
+    page = request.args.get('page', 1, type=int)
+    pagination,lists = model.list(page,id)
+    active_list = model.get_list(id)
+    
+    return render_template(
+        "cards.html",
+        lists=lists,
+        active_list=active_list,
         pagination=pagination)
     
-@crud.route('/<id>')    
-def view(id):
-    return None
 
-@crud.route('/create', methods=['POST'])
-def create():
+
+@crud.route('/create/<int:id>', methods=['POST'])
+def create(id):
     print("created")
     data = {}
     
     data['word'] = request.form.get('word')
     word = data['word']
-    querystring = {"source":"en","target":"ko","text":word}
+    languages = model.get_languages(id)
+    querystring = {"source":languages[0],"target":languages[1],"text":word}
  
     response = requests.request("POST", url, headers=headers, params=querystring)
 
     data['word_translation'] = response.json().get('message').get('result').get('translatedText')
+    data['list_id'] = id
     print(data['word_translation'])
-    failed = model.create_todo(data)
+    todo = model.create_todo(data)
    
-    if failed:
+    if todo is None:
+        abort(500)
+    else:
+        return redirect(url_for('.view',id=id))
+    
+@crud.route('/lists/create', methods=['POST'])
+def create_list():
+    error = False
+    print("gonig oo create list")
+    src = request.form.get('source-language')
+    target = request.form.get('target-language')
+    error,body = model.create_list(src,target)
+    if error:
         abort(500)
     else:
         return redirect(url_for('.list'))
@@ -66,5 +92,14 @@ def delete(todo_id):
         abort(500)
     else:
         return data
+    
+@crud.route('/lists/<list_id>/delete', methods=['DELETE'])
+def delete_list(list_id):
+    error = False
+    error = model.delete_list(list_id)
+    if error:
+        abort(500)
+    else:
+        return jsonify({'success': True})
         
         

@@ -21,16 +21,25 @@ def from_sql(row):
     return data
 
 class Text(db.Model):
-    __tablename__ = "todos"
+    __tablename__ = "texts"
     id = db.Column(db.Integer, primary_key=True)
     word = db.Column(db.String(), nullable=False)
     word_translation = db.Column(db.String(),nullable=False)
-    completed = db.Column(db.Boolean, nullable=False, default=False)
+    list_id = db.Column(db.Integer, db.ForeignKey(
+        'lists.id'), nullable=False)
 
     def __repr__(self):
-        return f'<Todo ID: {self.id}, description: {self.description}, completed: {self.completed}>'
+        return f'<Todo ID: {self.id}, word: {self.word}, translation: {self.word_translation}>'
 
+class List(db.Model):
+    __tablename__ = "lists"
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(), nullable=False)
+    texts = db.relationship('Text', backref='list', lazy=True)
 
+    def __repr__(self):
+        return f'<TodoList ID: {self.id}, name: {self.name}, todos: {self.todos}>'
+    
 '''def list(limit=10, cursor=None):
     cursor = int(cursor) if cursor else 0
     query = (Todo.query
@@ -41,24 +50,59 @@ class Text(db.Model):
     next_page = cursor + limit if len(todos) == limit else None
     return (todos, next_page)'''
  
-def list(page,limit=8):
-    pagination = Text.query.paginate(page=page,per_page=limit)
+def list(page,id,limit=8):
+    pagination = Text.query.filter_by(list_id=id).paginate(page=page,per_page=limit)
     todos_list = builtin_list(map(from_sql, pagination.items))
     return pagination,todos_list
+
+def list_categories(page,limit=5):
+    pagination = List.query.paginate(page=page,per_page=limit)
+    list = builtin_list(map(from_sql, pagination.items))
+    return pagination,list
         
+def get_lists():
+    return List.query.all()
+
+def get_list(id):
+    return List.query.get(id)
+
+def get_languages(id):
+    lst = List.query.get(id)
+    return lst.name.split("->")
+    
 
 def create_todo(data):
-    error = False
+    todo = None
     try:
         todo = Text(**data)
         db.session.add(todo)
         db.session.commit()
     except:
-        error = True
+        todo = None
         db.session.rollback()
         print(sys.exc_info())
 
-    return error
+    return todo
+
+def create_list(src,target):
+    error = False
+    body = {}
+    try:
+        name = src + "->" + target
+        list = List(name=name)
+        db.session.add(list)
+        db.session.commit()
+        body['id'] = list.id
+        body['name'] = list.name
+    except:
+        db.session.rollback()
+        error = True
+        body = None
+        print(sys.exc_info)
+    finally:
+        db.session.close()
+    
+    return error,body
    
 
 def read(todo_id):
@@ -91,7 +135,23 @@ def delete_todo(todo_id):
     
     return {'success': True} if not error else None
 
+def delete_list(list_id):
+    error = False
+    try:
+        list = List.query.get(list_id)
+        for text in list.texts:
+            db.session.delete(text)
 
+        db.session.delete(list)
+        db.session.commit()
+    except:
+        db.session.rollback()
+        error = True
+    finally:
+        db.session.close()
+    
+    return error
+   
 
 
 def _create_database():

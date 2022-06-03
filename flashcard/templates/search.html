@@ -1,0 +1,14 @@
+{% extends "cards.html" %}
+
+{% block crumbs %}
+    
+   
+    <ol class="col-12 breadcrumb">
+        <li class="breadcrumb-item"><a href="/">Home</a></li>
+        <li class="breadcrumb-item"><a href="/todos/list/{{active_list.id}}">Cards</a></li>
+        <li class="breadcrumb-item active"> Searched Cards</li>
+
+    </ol>
+    
+    
+{%endblock%}

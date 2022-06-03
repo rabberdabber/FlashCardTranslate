@@ -12,29 +12,55 @@
 {% endblock %}
 
 {% block content %}
-    <br>
-    <br>
-    <form action="/todos/create/{{active_list.id}}" method="POST" id="todo-form">
+     <header class="jumbotron">
             <div class="container">
-
-            <div class="form-group row">
-                <div class="col-md-2">
-                <label for="word"><strong>Create Task:</strong></label>
+                <div class="row row-header">
+                    <div class="col-12 col-sm-6 text-center">
+                        <h1>{{active_list.name}} Language FlashCards</h1>
+                        <p> Click any Card to view the translated word</p>
+                    <div class="col-12 col-sm">
                 </div>
-                <div class="col-md-6">
-                    <div class="form-check">
-                        <input type="text" class="form-control" id="word" name="word" placeholder="word"> 
+            </div>
+    </header>
+    <br>
+    <div class="container">
+        <div class="row row-header">
+
+            {% block crumbs%}
+            <ol class="col-12 breadcrumb">
+                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item active">Cards</li>
+
+            </ol>
+            {% endblock%}
+
+            <label for="word-form"> <p>Add/Search word<p></label>
+            <form action="/todos/create/{{active_list.id}}" method="POST" id="todo-form" name="word-form">
+                    
+                    <div class="row">
+                        <div class="col-12  float-left">
+                            <div class="form-check">
+                                <input type="text" class="form-control" id="word" name="word" placeholder="word"> 
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary" id="todo-button">Create Task</button> 
-                </div>
-            </div>
-            
 
-            </div>
-        </form>
-            
+                    <div class="row">
+                        <div class="col-12 text-right"> 
+                        
+                            <i class="fa-solid fa-plus fa-lg"></i>
+                            <input type="submit" value="Add" name="word" class="btn btn-success">
+
+                            <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+                            <input type="submit" value="Search" name="search-word" class="btn btn-success">
+                        </div>
+                    </div>
+                    
+            </form>
+ 
+        </div>
+    </div>   
+    <br>         
         <div class="container">
         {% for i in range(2)%}
             <div class="row">

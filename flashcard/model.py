@@ -35,6 +35,7 @@ class List(db.Model):
     __tablename__ = "lists"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
+    code = db.Column(db.String(), nullable=False)
     texts = db.relationship('Text', backref='list', lazy=True)
 
     def __repr__(self):
@@ -66,10 +67,9 @@ def get_lists():
 def get_list(id):
     return List.query.get(id)
 
-def get_languages(id):
-    lst = List.query.get(id)
-    return lst.name.split("->")
-    
+def get_id(name):
+    list = List.query.filter_by(name=name).first()
+    return list.id if list is not None else None
 
 def create_todo(data):
     todo = None
@@ -84,16 +84,22 @@ def create_todo(data):
 
     return todo
 
-def create_list(src,target):
+def search_todo(data):
+    todos = None
+    pagination = Text.query.filter_by(list_id=data['id']).filter_by(word=data['word']).paginate(page=1,per_page=5)
+    todos = builtin_list(map(from_sql, pagination.items))
+    return pagination,todos
+
+def create_list(data):
     error = False
     body = {}
     try:
-        name = src + "->" + target
-        list = List(name=name)
+        list = List(**data)
         db.session.add(list)
         db.session.commit()
         body['id'] = list.id
         body['name'] = list.name
+        body['code'] = list.code
     except:
         db.session.rollback()
         error = True

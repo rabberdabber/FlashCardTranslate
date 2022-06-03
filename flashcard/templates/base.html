@@ -53,6 +53,10 @@
         margin: 0px auto;
         padding: 0px auto;
       }
+      table {
+        border: 1px solid #ddd;
+        border-color: black;
+      }
 
       .row-content {
           margin: 0px auto;
@@ -152,7 +156,7 @@
                 <span class="navbar-toggler-icon"> </span>
             </button>
             <a class="navbar-brand mr-auto" href="#">FlashCards </a>
-            <span class="iconify" data-icon="ph:cards-duotone"></span>
+            <span class="iconify" data-icon="fluent:stack-24-filled"> </span>
             <div class="collapse navbar-collapse" id="Navbar">
       
               {%block navigator%}
@@ -187,21 +191,24 @@
                 <div class="row row-header">
                     <div class="col-12 col-sm-6 text-center">
                         <h1>Language FlashCards</h1>
-                        <p> Click any Card to view the translated word</p>
+                        <p> Add language Categories and press the link to view flashcards</p>
                     <div class="col-12 col-sm">
                 </div>
             </div>
         </header>
         
         <br>
+        {% if error %}
+          <p class="error text-center"> <strong> Error: </strong> {{ error }} </p>
+        {% endif %}
         <div class="container">
           <div class="row lists-wrapper">
-            <label for="source-language target-language"> <p>Add Source and Target Language<p></label>
+            <label for="source-language target-language"> <p>Add/Search/Delete Source to Target Language Category<p></label>
              <form action="lists/create" method="POST" id="source-language"> 
-              <div class="col-6 float-left">
-                  <label for="source">Source:</label>
+             <!-- <div class="col-12 float-left">
                   <select class="form-control" name="source-language">
-                    <option value="en">English</option>
+                    <option value="" selected disabled>Select a source language</option>
+                    <option value="en" selected>English</option>
                     <option value="es">Spanish</option>
                     <option value="fr">French</option>
                     <option value="de">German</option>
@@ -215,30 +222,71 @@
                     <option value="vi">Vietnamese</option>
                     <option value="zh-CHT">Traditional Chinese</option>
                   </select>
+              </div>-->
+              <div class="form-group">
+                {{form.csrf_token}}
+                <label for="source-language">Source:</label>
+                {{form.source(class="form-control")}}
+                {% if form.source.errors %}
+                  <ul class="errors">
+                      {% for error in form.source.errors %}
+                          <li style="color: red;" class="text-center">{{ error }}</li>
+                      {% endfor %}
+                  </ul>
+                {% endif %}
               </div>
-
-              <div class="col-6 float-right">
-                  <label for="target"><p>Target:</p></label>
+        
+              <div class="col-12 text-center">
+                <i class="fa fa-arrow-circle-down fa-lg"></i>
+              </div>
+             <!-- <div class="col-12 float-left">
                   <select class="form-control" name="target-language">
+                    <option value="" selected disabled>Select a target language</option>
                     <option value="en">English</option>
                     <option value="es">Spanish</option>
-                    <option value="fr">French</option>
+                    <option value="fr">French</option>ele
                     <option value="de">German</option>
                     <option value="it">Italian</option>
                     <option value="zh"> Simplified Chinese </option>
                     <option value="ja">Japanese</option>
-                    <option value="ko">Korean</option>
+                    <option value="ko" selected>Korean</option>
                     <option value="in">Indonesian</option>
                     <option value="ru">Russian</option>
                     <option value="th">Thai</option>
                     <option value="vi">Vietnamese</option>
                     <option value="zh-CHT">Traditional Chinese</option>
                   </select>
+              </div>-->
+               <div class="form-group">
+                <label for="target-language">Target:</label>
+                {{form.target(class="form-control")}}
               </div>
 
-              <div class="col-6 float-right">
-                <button type="submit" class="btn btn-primary float-right">Submit</button>
+              <div class="form-group col-12 text-right">
+                <i class="fa-solid fa-plus fa-lg"></i>
+                {{form.add(class="btn btn-success")}}
+                 <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+                {{form.search(class="btn btn-success")}}
+                <i class="fa-solid fa-trash-can fa-lg"></i>
+                {{form.delete(class="btn btn-success")}}
               </div>
+              
+             <!-- <div class="row">
+                <div class="col-12 text-right"> 
+                
+                  <i class="fa-solid fa-plus fa-lg"></i>
+                  <input type="submit" value="Add" name="Add" class="btn btn-success">
+
+                    
+                  <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+                  <input type="submit" value="Search" name="Search" class="btn btn-success">
+
+                  <i class="fa-solid fa-trash-can fa-lg"></i>
+                  <input type="submit" value="Delete" name="Delete" class="btn btn-success">
+                </div>
+              </div>-->
+              
+              
             </form>
           </div>
         </div>
@@ -246,54 +294,23 @@
         <br>
         <div class="container">
           <div class="row">
-            <div class = "col-6"
-              <ul id="lists">
-                  {% for list in lists %}
-                    <li>
-                      <div class="col-10 float-left">
-                        <a href="{{url_for('crud.view',id=list.id)}}" class="list-group-item list-group-item-action" data-id="{{list.id}}"> {{list.name}} </a>
-                      </div>
-                      <div class="col-1 float-right">
-                        <button class="delete-list" data-id="{{ list.id }}">&cross;</button>
-                      </div>
-                    </li>
-                  {% endfor %}
-              </ul>
+            <table class="w-100">
+              <tr class="text-center">
+                <th> Id </th>
+                <th> Language Category</th>
+                <th> Link to Cards </th>
+                <th> Delete Category </th>
+              </tr>
+               {% for i in range(lists|length)%}
+              <tr class="clickable text-center">
+                <td> {{i+1}} </td>
+                <td><p>{{lists[i].name}}</p> </td>
+                <td><a href="{{url_for('crud.view',id=lists[i].id)}}" class="btn btn-primary">Link <i class="fa-solid fa-arrow-up-right-from-square fa-lg"></i></a></td>
+                <td> <a class="btn btn-danger delete-list" data-id={{lists[i].id}}>Delete <i class="fa-solid fa-trash-can fa-lg"></i></a></td>
+              </tr>
+              {% endfor %}
+            </table>
 
-          </div>
-
-        </div class="col-6">
-        {% for i in range(2)%}
-            <div class="row">
-                {% for j in range(4) %}
-                {% if (todos|length) > (j + (i * 4)) %}
-                    <div class="flashcard">
-                    <button class="delete-todo" data-id="{{ todos[j + (i * 4)].id }}">&cross;</button>
-                    <div class="p-3 front border">
-                        <h3>{{todos[j + (i * 4)].word}}</h3>
-                    </div>
-                    <div class="p-3 back border">
-                        <p>{{todos[j + (i * 4)].word_translation}}</p>
-                    </div>
-                    </div>
-
-                {% else%}
-                    <div class="flashcard hidden">
-                    <button>&cross;</button>
-                    <div class="p-3 front border">
-                        <h3></h3>
-                    </div>
-                    <div class="p-3 back border">
-                        <p></p>
-                    </div>
-                    </div>
-
-                {% endif%}
-                
-                {%endfor%}
-                </div>
-        {%endfor%}
-        </div>
       </div>
     </div>
 
@@ -326,7 +343,7 @@
         </script>
        
       {% endblock %}
-        
+      <br> 
       {% if pagination %}
         <!-- Pagination Links-->
         <div class="text-center">
@@ -377,19 +394,18 @@
        <br>
         <div class="container">
             <div class="row">             
-                <div class="col-12">
-                    <h5>Contact Us</h5>
-                    <address class="address">
-                    <div class="btn-group row" role="group">
-                      <a role="button" class="btn btn-primary" href="tel:+821021879779"><i class="fa fa-phone"></i> Call</a>
-                      <a role="button" class="btn btn-success" href="mailto:bereket@kakao.com"><i class="fa fa-envelope-o"></i> Email</a>
+                <div class="col-12 col-sm-4 align-self-center">
+                    <div class="text-center">
+                        <a class="btn btn-social-icon btn-linkedin" href="http://www.linkedin.com/in/bereket-assefa-251a79178/"><i class="fa-brands fa-linkedin fa-lg"></i></a>
+                        <a class="btn btn-social-icon btn-google" href="http://youtube.com//channel/UCY9ko_oY6TA9WIVz_symvqA"><i class="fa-brands fa-youtube fa-lg"></i></a>
+                        <a class="btn btn-social-icon btn-twitter" href="mailto:bereket@kakao.com"><i class="fa-solid fa-envelope fa-lg"></i></a>
                     </div>
                 </div>
 
                 <div class="col-12 text-center">             
                   <div class="col-auto">
                       <p>© Copyright 2022 rabberdabber</p>
-                      <a> FlashCards<span class="iconify" data-icon="ph:cards-duotone"></span></a>
+                      <a> FlashCards<span class="iconify" data-icon="fluent:stack-24-filled"></span></a>
                      
                   </div>
                 </div>

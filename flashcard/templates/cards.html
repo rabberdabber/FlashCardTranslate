@@ -1,10 +1,11 @@
 {% extends "base.html" %}
+
 {% block navigator%}
-   
     <ul class="navbar-nav mr-auto">
         <li class="nav-item active"><a class="nav-link" href="/"><span class="fa fa-home fa-lg"> </span><small>Home</small></a></li>
         <li class="nav-item"><a class="nav-link" href="../../contact.html"><span class="fa fa-info fa-lg"></span><small> Contact</small></a></li>
     </ul>
+
     <ul class="navbar-nav ml-auto"> 
         <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-sign-in fa-lg"></span><small>Login</small></a></li>
         <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-user-plus fa-lg"></span><small>SignUp</small></a></li>
@@ -12,6 +13,7 @@
 {% endblock %}
 
 {% block content %}
+
      <header class="jumbotron">
             <div class="container">
                 <div class="row row-header">
@@ -21,101 +23,94 @@
                     <div class="col-12 col-sm">
                 </div>
             </div>
-    </header>
+     </header>
+
     <br>
     <div class="container">
         <div class="row row-header">
 
             {% block crumbs%}
-            <ol class="col-12 breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
-                <li class="breadcrumb-item active">Cards</li>
-
-            </ol>
+                <ol class="col-12 breadcrumb">
+                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item active"> Cards</li>
+                </ol>
             {% endblock%}
 
             <label for="word-form"> <p>Add/Search word<p></label>
-            <form action="/todos/create/{{active_list.id}}" method="POST" id="todo-form" name="word-form">
-                    
-                    <div class="row">
-                        <div class="col-12  float-left">
-                            <div class="form-check">
-                                <input type="text" class="form-control" id="word" name="word" placeholder="word"> 
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-12 text-right"> 
-                        
-                            <i class="fa-solid fa-plus fa-lg"></i>
-                            <input type="submit" value="Add" name="word" class="btn btn-success">
-
-                            <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-                            <input type="submit" value="Search" name="search-word" class="btn btn-success">
-                        </div>
-                    </div>
+            <form action="cards" method="POST" id="card-form" name="word-form">
+                           
+                <div class="form-group">
+                  {{ form.hidden_tag() }}
+                  {{ wtf.form_errors(form, hiddens="only") }}
+                  {{ form.text }}
+                  <i class="fa-solid fa-plus fa-lg"></i>
+                  {{form.add(class="btn btn-success")}}
+                  <i class="fa-solid fa-magnifying-glass fa-lg"></i>
+                  {{form.search(class="btn btn-success")}}  
+                </div>
                     
             </form>
  
         </div>
     </div>   
-    <br>         
+
+        <br>         
         <div class="container">
         {% for i in range(2)%}
+
             <div class="row">
                 {% for j in range(4) %}
-                {% if (lists|length) > (j + (i * 4)) %}
-                    <div class="flashcard">
-                    <button class="delete-todo" data-id="{{ lists[j + (i * 4)].id }}">&cross;</button>
-                    <div class="p-3 front border">
-                        <h3>{{lists[j + (i * 4)].word}}</h3>
-                    </div>
-                    <div class="p-3 back border">
-                        <p>{{lists[j + (i * 4)].word_translation}}</p>
-                    </div>
-                    </div>
+                    {% if (lists|length) > (j + (i * 4)) %}
+                        <div class="flashcard">
+                        <button class="delete-card" data-id="{{ lists[j + (i * 4)].id }}">&cross;</button>
+                        <div class="p-3 front border">
+                            <h3>{{lists[j + (i * 4)].word}}</h3>
+                        </div>
+                        <div class="p-3 back border">
+                            <p>{{lists[j + (i * 4)].word_translation}}</p>
+                        </div>
+                        </div>
 
-                {% else%}
-                    <div class="flashcard hidden">
-                    <button>&cross;</button>
-                    <div class="p-3 front border">
-                        <h3></h3>
-                    </div>
-                    <div class="p-3 back border">
-                        <p></p>
-                    </div>
-                    </div>
+                    {% else%}
+                        <div class="flashcard hidden">
+                        <button>&cross;</button>
+                        <div class="p-3 front border">
+                            <h3></h3>
+                        </div>
+                        <div class="p-3 back border">
+                            <p></p>
+                        </div>
+                        </div>
 
-                {% endif%}
+                    {% endif%}
                 
                 {%endfor%}
-                </div>
+            </div>
+
         {%endfor%}
         </div>
 
         <br>
         <br>
         <script>
-          deleteBtns = document.querySelectorAll(".delete-todo");
+          deleteBtns = document.querySelectorAll(".delete-card");
           for (let i = 0; i < deleteBtns.length; i++) {
             const deleteBtn = deleteBtns[i];
             deleteBtn.onclick = function(e) {
               console.log("Delete event: ", e);
-              const todoId = e.target.dataset.id;
-              fetch('/todos/'+ todoId + '/delete',{
+              const cardId = e.target.dataset.id;
+              fetch('../../cards/'+ cardId,{
                 method: 'DELETE'
               })
               .then(function() {
-                var url = '/todos/list/{{active_list.id}}?page=1';
+                var url = 'cards?page=1';
                 if (deleteBtns.length > 1){
-                  url = '/todos/list/{{active_list.id}}?page={{ pagination.page }}';
+                  url = 'cards?page={{ pagination.page }}';
                 }
                 else if({{ pagination.page }} > 1){
-                  url = '/todos/list/{{active_list.id}}?page={{ pagination.page - 1 }}';
+                  url = 'cards?page={{ pagination.page - 1 }}';
                 }
-                
-                window.location.replace(url);
+               window.location.replace(url);
               });
             };
           }
@@ -123,4 +118,46 @@
         </script>
    
 
+{% endblock %}
+
+{% block paginate%}
+    {% if pagination %}
+            <!-- Pagination Links-->
+            <div class="text-center">
+                <a href="{{ url_for('crud.view',id= active_list.id,page=pagination.prev_num) }}"
+                    class="btn btn-outline-dark 
+                    {% if pagination.page == 1 or pagination.pages == 0  %}disabled{% endif %}">
+                    &laquo;
+                </a>
+            <!-- Loop through the number of pages to display a link for each-->
+                {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+                {% if page_num %}
+            <!-- Check for the active page and set the link to "Active"-->
+                        {% if pagination.page == page_num %}
+                         <a href="{{ url_for('crud.view',id=active_list.id,page=page_num) }}"
+                            class="btn btn-dark">
+                            {{ page_num }}
+                        </a>
+                        {% else %}
+                       <a href="{{ url_for('crud.view',id=active_list.id,page=page_num) }}"
+                            class="btn btn-outline-dark">
+                            {{ page_num }}
+                        </a>
+                        {% endif %}
+                    {% else %}
+                        ...
+                    {% endif %}
+                {% endfor %}
+                 <a href="{{ url_for('crud.view',id=active_list.id,page=pagination.prev_num) }}"
+                    class="btn btn-outline-dark 
+                    {% if pagination.page == pagination.pages or pagination.pages == 0 %}disabled{% endif %}">
+                    &raquo;
+                </a>
+            </div>
+            {% if pagination.pages > 0%}
+            <p class="text-center mt-3">
+                Showing page {{ pagination.page }} of {{ pagination.pages }}
+            </p>
+            {% endif %}
+        {% endif %}
 {% endblock %}

@@ -3,22 +3,19 @@ from . import model
 from flask import Blueprint, jsonify, redirect, render_template, request, url_for, json, abort,flash
 from .naver_credentials import headers
 import requests
-from langcodes import *
-from .forms import LanguageForm
+#from langcodes import *
+from .forms import LanguageForm,WordForm,language_dict
 
 
 crud = Blueprint('crud',__name__)
 url = "https://openapi.naver.com/v1/papago/n2mt"
 
 @crud.route("/")
-def list(error=None):
+def list():
     page = request.args.get('page', 1, type=int)
     pagination,lists = model.list_categories(page)
     
-    form = LanguageForm()
-    
-    if error is not None:
-        form.source.errors = error
+    form = LanguageForm() 
         
     return render_template(
         "base.html",
@@ -27,65 +24,80 @@ def list(error=None):
         pagination=pagination,
         form=form)
 
-@crud.route("/list/<int:id>")
+@crud.route("/categories/<int:id>/cards",methods=["GET"])
 def view(id):
     page = request.args.get('page', 1, type=int)
     pagination,lists = model.list(page,id)
     active_list = model.get_list(id)
+    form = WordForm()
     
     return render_template(
         "cards.html",
         lists=lists,
         active_list=active_list,
-        pagination=pagination)
+        pagination=pagination,
+        form=form)
 
-@crud.route("/list/<int:id>/<string:word>")
-def view_word(id,word):
+@crud.route("/cards/<int:id>",methods=["GET"])
+def view_card(id):
+    
     data = {}
-    data['word'] = word
-    data['id'] = id
-    pagination,todos = model.search_todo(data)
+    pagination,card = model.search_card(id)
+    form = WordForm()
     
     return render_template(
         "search.html",
-        lists=todos,
-        active_list=model.get_list(id),
-        pagination=pagination) 
+        lists=[card],
+        active_list=model.get_list(card.list_id),
+        form=form,
+        pagination=pagination)
     
 
-
-@crud.route('/create/<int:id>', methods=['POST'])
-def create(id):
+@crud.route('/categories/<int:id>/cards', methods=['POST','GET'])
+def create_card(id):
     print("created")
     data = {}
-    data['word'] = request.form.get('word')
-    if data['word']:
+    form = WordForm()
+    print(form.text.data,form.add.data,form.search.data)
+    data['word'] = form.text.data
+    
+    if form.add.data:
         print(data['word'])
         word = data['word']
         list = model.get_list(id)
         codes = list.code.split("->")
         querystring = {"source":codes[0],"target":codes[1],"text":word}
         response = requests.request("POST", url, headers=headers, params=querystring)
-
-        data['word_translation'] = response.json().get('message').get('result').get('translatedText')
+        
+        msg = response.json().get('message')
+        
+        if msg and msg.get('result'):
+            data['word_translation'] = msg.get('result').get('translatedText')
+        else:
+            data['word_translation'] = ":("
+        
         data['list_id'] = id
         print(data['word_translation'])
-        todo = model.create_todo(data)
+        card = model.create_card(data)
     
-        if todo is None:
+        if card is None:
             abort(500)
         else:
             return redirect(url_for('.view',id=id))
         
-    elif request.form.get('search-word'):
-       print(request.form.get("search-word"))
-       return redirect(url_for('.view_word',id=id,word=request.form.get('search-word')))
-    else:
-        return redirect(url_for('.view',id=id))
+    elif form.search.data:
+        card_id = model.get_card_id(data['word'])
+        print(card_id)
+        if card_id:
+            return redirect(url_for('.view_card',id=card_id))
+        else:
+            flash('searched word not found')
+        
+    return redirect(url_for('.view',id=id))
     
-@crud.route('/lists/create', methods=['POST','DELETE'])
-def create_list():
-  
+@crud.route('/categories', methods=['POST'])
+def create_categories():
+
     form = LanguageForm(request.form)
     if form.validate_on_submit():
         print("submitted and validated")
@@ -94,19 +106,16 @@ def create_list():
         
     else:
         print(form.source.data,form.target.data)
-        error = ""
-        for e in form.source.errors:
-            error += e
-        # how to pass form into list page ??
-        print(error)
+        flash("the selected source language should be different from the target language")
         return redirect(url_for('.list'))
         
     src = form.source.data
     target = form.target.data
-    src_name = Language.make(language=src).display_name()
-    target_name = Language.make(language=target).display_name()
+    src_name = language_dict[src]
+    target_name = language_dict[target]
     name = src_name + " -> " + target_name
     id = model.get_id(name) 
+    
     if form.add.data:
         print(request.form.get("search"))
         error = False
@@ -114,57 +123,59 @@ def create_list():
         data = {}
         data['name'] = name
         data['code'] = src + "->" + target
+        
+        if id is not None:
+            msg = "the category " + name + " already exists, could search it instead"
+            flash(msg)
+            return redirect(url_for('.list'))
+        
         error,body = model.create_list(data)
+        
         if error:
             abort(500)
         else:
-            # flash message here
+            msg = "added the new category " + name
+            flash(msg)
+            
             return redirect(url_for('.list'))
         
     elif form.search.data:
         if id is not None:
-            # flash-message for search
-            return redirect(url_for('view',id=id))
+            return redirect(url_for('.view',id=id))
+        else:
+            flash('the category does not exist, you can add it instead')
         
     elif form.delete.data:
         if id is not None:
-            # flash-message should be sent to the frontend
-            error = model.delete_list(id)
-            if error:
-                abort(500)
+            return delete_category(id)
+        else:
+            flash('the category does not exist, you can add it instead')
         
     return redirect(url_for('.list'))
     
-    
 
-@crud.route('/<todo_id>/set-completed', methods=['POST'])
-def update(todo_id):
-    completed = request.get_json()['completed']
-    todo = model.update_todo(todo_id,completed)
-    
-    if todo is None:
-        abort(500)
-    else:
-        return redirect(url_for("index"))
-    
 
-@crud.route('/<todo_id>/delete', methods=['DELETE'])
-def delete(todo_id):
-    print("going to delete ",todo_id)
-    data = model.delete_todo(todo_id)
+@crud.route('/cards/<int:id>', methods=['DELETE'])
+def delete(id):
+    print("going to delete ",id)
+    data = model.delete_card(id)
     
     if data is None:
         abort(500)
     else:
         return data
     
-@crud.route('/lists/<list_id>/delete', methods=['DELETE'])
-def delete_list(list_id):
+@crud.route('/categories/<int:id>', methods=['DELETE'])
+def delete_category(id):
     error = False
-    error = model.delete_list(list_id)
+    name = model.get_list(id).name
+    error = model.delete_list(id)
+    
     if error:
         abort(500)
     else:
-        return jsonify({'success': True})
+        msg = "successfully deleted the " + name + " category"  
+        flash(msg)
+        return redirect(url_for('.list'))
         
         

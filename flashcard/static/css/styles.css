@@ -1,0 +1,125 @@
+.hidden {
+    display: none;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+    width: 200px;
+}
+
+li {
+    clear: both;
+}
+
+h1,
+p {
+    font-family: "Nova Flat";
+}
+
+li button {
+    -webkit-appearance: none;
+    border: none;
+    outline: none;
+    color: red;
+    float: right;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.lists-wrapper {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.paginations-wrapper{
+    display: inline-block;
+    vertical-align: top;
+}
+
+.row-header {
+    margin: 0px auto;
+    padding: 0px auto;
+}
+
+table {
+    border: 1px solid #ddd;
+    border-color: black;
+}
+
+.row-content {
+    margin: 0px auto;
+    border-bottom: 1px ridge;
+    border-bottom-color: black;
+}
+
+header {
+    background-color: #f1f1f1;
+    padding: 20px;
+    text-align: right;
+}
+
+.footer {
+    margin: 0px auto;
+    border-top: 1px ridge;
+    border-top-color: black;
+    background-color: #d1c4E9;
+    height: 30px;
+}
+
+.jumbotron {
+    color: black;
+    background: #d1c4E9;
+    margin: 0px auto;
+    border-bottom: 1px ridge;
+    border-bottom-color: black;
+}
+
+.address {
+    font-size: 80%;
+    margin: 0px;
+    color: #0f0f0f;
+}
+
+body {
+    padding: 0px 0px 0px 0px;
+    z-index: 0;
+    background-color: #d1c4E9;
+}
+
+.navbar-dark {
+    background-color: #32064A;
+    border-bottom: 1px ridge;
+    border-bottom-color: black;
+}
+
+form {
+    background-color: #d1c4E9;
+}
+
+.navbar-nav>li {
+    margin-left: 30px;
+    margin-right: 30px;
+}
+
+.front,
+.back {
+    width: 100%;
+    min-height: 300px;
+    display: table;
+}
+
+.front h3,
+.back p {
+    display: table-cell;
+    vertical-align: middle;
+    text-align: center;
+}
+
+.fast {
+    animation-duration: .5s;
+}
+
+.flashcard {
+    width: 25%;
+}

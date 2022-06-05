@@ -3,9 +3,11 @@ from wtforms import SelectField,SubmitField,StringField
 from wtforms.validators import DataRequired,ValidationError,InputRequired
 from flask_wtf import FlaskForm
 
-codes = ['en','es','fr','de','it','zh-CN','ja','ko','in','ru','th','vi','zh-CHT']
-languages = ['English','Spanish','French','German','Italian','Chinese','Japanese','Korean','Indonesian','Russian','Vietnamese','Thai','Chinese (Traditional)']
+# fetch the available languages from the API instead of a list
+codes = ['en','es','fr','de','it','zh-CN','ja','ko','in','ru','th','vi','zh-TW']
+languages = ['English','Spanish','French','German','Italian','Simplified Chinese','Japanese','Korean','Indonesian','Russian','Vietnamese','Thai','Traditional Chinese']
 choices = list(zip(codes,languages))
+language_dict = dict(choices)
 
 def is_equal_to(form,field):
     if field.data == form.target.data:
@@ -13,9 +15,15 @@ def is_equal_to(form,field):
     
         
 class LanguageForm(FlaskForm):
-    source = SelectField('srcLanguage',choices=choices,validators=[InputRequired(),is_equal_to])
-    target = SelectField('targetLanguage',choices=choices,validators=[InputRequired()])
+    source = SelectField('source',choices=choices,validators=[InputRequired(),is_equal_to])
+    target = SelectField('target',choices=choices,validators=[InputRequired()])
+    add = SubmitField('Add')
+    search = SubmitField('Link')
+    delete = SubmitField('Delete')
+    
+class WordForm(FlaskForm):
+    text = StringField('text',validators=[InputRequired()])
     add = SubmitField('Add')
     search = SubmitField('Search')
-    delete = SubmitField('Delete')
+    
     

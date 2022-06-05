@@ -1,3 +1,6 @@
+
+{% import "bootstrap/wtf.html" as wtf %}
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,139 +11,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-social/5.1.1/bootstrap-social.min.css"> 
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Nova+Flat" >
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.0/animate.min.css">
-
-    <title>Todo App</title>
-    <style>
-      .hidden {
-        display: none;
-      }
-      ul {
-        list-style: none;
-        pagination-style: none;
-        padding-left: 0;
-        width: 200px;
-      }
-      li {
-        clear: both;
-      }
-      
-      .todo-pagination {
-        margin-top: 20px;
-      }
-
-      h1,p { 
-        font-family: "Nova Flat";
-      }
-
-      li button {
-        -webkit-appearance: none;
-        border: none;
-        outline: none;
-        color: red;
-        float: right;
-        cursor: pointer;
-        font-size: 16px;
-      }
-      .lists-wrapper {
-        display: inline-block;
-        vertical-align: top;
-      }
-      .paginations-wrapper, .pagination-wrapper {
-        display: inline-block;
-        vertical-align: top;
-      }
-      .row-header {
-        margin: 0px auto;
-        padding: 0px auto;
-      }
-      table {
-        border: 1px solid #ddd;
-        border-color: black;
-      }
-
-      .row-content {
-          margin: 0px auto;
-          border-bottom: 1px ridge;
-          border-bottom-color: black;
-      }
-
-      header {
-        background-color: #f1f1f1;
-        padding: 20px;
-        text-align: right;
-      }
-
-      .footer {
-          /*position: absolute;
-          bottom: 0;
-          width: 100%;
-          height: 30px;*/
-          margin: 0px auto;
-          border-top: 1px ridge;
-          border-top-color: black;
-          background-color: #d1c4E9; 
-          height: 30px;
-      }
-
-      .jumbotron {
-          color: black;
-          background: #d1c4E9;
-          margin: 0px auto;
-          border-bottom : 1px ridge;
-          border-bottom-color: black;
-      }
-
-      .address {
-          font-size: 80%;
-          margin: 0px;
-          color: #0f0f0f;
-      }
-
-      body {
-          padding:  0px 0px 0px 0px;
-          z-index: 0;
-          background-color: #d1c4E9;
-      }
-
-      .navbar-dark{
-          background-color: #32064A;
-          border-bottom: 1px ridge;
-          border-bottom-color: black;
-      }
-
-      form {
-        background-color: #d1c4E9;
-      }
-
-      .navbar-nav > li {
-        margin-left: 30px;
-        margin-right: 30px;
-      }
-      
-      .front, .back {
-        width:100%;
-        min-height:300px;
-        display: table;
-      }
-
-      .front h3, .back p {
-        display: table-cell;
-        vertical-align: middle;
-        text-align: center;
-      }
-
-      .fast {
-        animation-duration: .5s;
-      }
-      .flashcard {
-        /*border: 1px solid black;
-        border-color: black;*/
-       /* cursor:pointer;*/
-        width: 25%;
-      }
-
-
-    </style>
+    <link rel="stylesheet" type="text/css" href={{url_for('static',filename='css/styles.css')}}>
+    <title>FlashCard App</title>
+   
   </head>
   <body>
    
@@ -162,7 +35,7 @@
               {%block navigator%}
               <ul class="navbar-nav mr-auto">
                 <li class="nav-item active"><a class="nav-link" href="#"><span class="fa fa-home fa-lg"> </span><small>Home</small></a></li>
-                <li class="nav-item"><a class="nav-link" href="../contact.html"><span class="fa fa-info fa-lg"></span><small> Contact</small></a></li>
+                <li class="nav-item"><a class="nav-link" href="../../contact.html"><span class="fa fa-info fa-lg"></span><small> Contact</small></a></li>
               </ul>
               <ul class="navbar-nav ml-auto"> 
                 <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-sign-in fa-lg"></span><small>Login</small></a></li>
@@ -177,19 +50,13 @@
 
     </nav>
 
-  
-    <script>
-      $('.navbar-nav').on('click','li', function(){
-        $(this).addClass('active').siblings().removeClass('active');
-      });
-    </script>
-
    
       {% block content %}
         <header class="jumbotron">
             <div class="container">
                 <div class="row row-header">
                     <div class="col-12 col-sm-6 text-center">
+                        <i class="fa-light fa-cards-blank fa-3x"></i>
                         <h1>Language FlashCards</h1>
                         <p> Add language Categories and press the link to view flashcards</p>
                     <div class="col-12 col-sm">
@@ -197,97 +64,38 @@
             </div>
         </header>
         
-        <br>
-        {% if error %}
-          <p class="error text-center"> <strong> Error: </strong> {{ error }} </p>
-        {% endif %}
+        <div class="container">
+          {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ message }}
+                </div>
+          {% endfor %}
+        </div>
+
         <div class="container">
           <div class="row lists-wrapper">
             <label for="source-language target-language"> <p>Add/Search/Delete Source to Target Language Category<p></label>
-             <form action="lists/create" method="POST" id="source-language"> 
-             <!-- <div class="col-12 float-left">
-                  <select class="form-control" name="source-language">
-                    <option value="" selected disabled>Select a source language</option>
-                    <option value="en" selected>English</option>
-                    <option value="es">Spanish</option>
-                    <option value="fr">French</option>
-                    <option value="de">German</option>
-                    <option value="it">Italian</option>
-                    <option value="zh"> Simplified Chinese </option>
-                    <option value="ja">Japanese</option>
-                    <option value="ko">Korean</option>
-                    <option value="in">Indonesian</option>
-                    <option value="ru">Russian</option>
-                    <option value="th">Thai</option>
-                    <option value="vi">Vietnamese</option>
-                    <option value="zh-CHT">Traditional Chinese</option>
-                  </select>
-              </div>-->
+             <!--could use flask bootstrap for better ui experience-->
+            <form action="categories" method="POST" id="source-language"> 
+            
               <div class="form-group">
-                {{form.csrf_token}}
-                <label for="source-language">Source:</label>
-                {{form.source(class="form-control")}}
-                {% if form.source.errors %}
-                  <ul class="errors">
-                      {% for error in form.source.errors %}
-                          <li style="color: red;" class="text-center">{{ error }}</li>
-                      {% endfor %}
-                  </ul>
-                {% endif %}
-              </div>
-        
-              <div class="col-12 text-center">
-                <i class="fa fa-arrow-circle-down fa-lg"></i>
-              </div>
-             <!-- <div class="col-12 float-left">
-                  <select class="form-control" name="target-language">
-                    <option value="" selected disabled>Select a target language</option>
-                    <option value="en">English</option>
-                    <option value="es">Spanish</option>
-                    <option value="fr">French</option>ele
-                    <option value="de">German</option>
-                    <option value="it">Italian</option>
-                    <option value="zh"> Simplified Chinese </option>
-                    <option value="ja">Japanese</option>
-                    <option value="ko" selected>Korean</option>
-                    <option value="in">Indonesian</option>
-                    <option value="ru">Russian</option>
-                    <option value="th">Thai</option>
-                    <option value="vi">Vietnamese</option>
-                    <option value="zh-CHT">Traditional Chinese</option>
-                  </select>
-              </div>-->
-               <div class="form-group">
-                <label for="target-language">Target:</label>
-                {{form.target(class="form-control")}}
-              </div>
+                  {{ form.hidden_tag() }}
+                  {{ wtf.form_errors(form, hiddens="only") }}
 
-              <div class="form-group col-12 text-right">
-                <i class="fa-solid fa-plus fa-lg"></i>
-                {{form.add(class="btn btn-success")}}
-                 <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-                {{form.search(class="btn btn-success")}}
-                <i class="fa-solid fa-trash-can fa-lg"></i>
-                {{form.delete(class="btn btn-success")}}
-              </div>
-              
-             <!-- <div class="row">
-                <div class="col-12 text-right"> 
-                
+                  {{ wtf.form_field(form.source) }}
+                  {{ wtf.form_field(form.target) }}
+                  
                   <i class="fa-solid fa-plus fa-lg"></i>
-                  <input type="submit" value="Add" name="Add" class="btn btn-success">
-
-                    
-                  <i class="fa-solid fa-magnifying-glass fa-lg"></i>
-                  <input type="submit" value="Search" name="Search" class="btn btn-success">
-
+                  {{form.add(class="btn btn-success")}}
+                 <i class="fa-solid fa-arrow-up-right-from-square fa-lg"></i>
+                  {{form.search(class="btn btn-success")}}
                   <i class="fa-solid fa-trash-can fa-lg"></i>
-                  <input type="submit" value="Delete" name="Delete" class="btn btn-success">
-                </div>
-              </div>-->
+                  {{form.delete(class="btn btn-success")}}
+              </div>
               
-              
-            </form>
+            </form> 
+
           </div>
         </div>
 
@@ -295,27 +103,29 @@
         <div class="container">
           <div class="row">
             <table class="w-100">
+
               <tr class="text-center">
                 <th> Id </th>
                 <th> Language Category</th>
                 <th> Link to Cards </th>
                 <th> Delete Category </th>
               </tr>
+
                {% for i in range(lists|length)%}
-              <tr class="clickable text-center">
-                <td> {{i+1}} </td>
-                <td><p>{{lists[i].name}}</p> </td>
-                <td><a href="{{url_for('crud.view',id=lists[i].id)}}" class="btn btn-primary">Link <i class="fa-solid fa-arrow-up-right-from-square fa-lg"></i></a></td>
-                <td> <a class="btn btn-danger delete-list" data-id={{lists[i].id}}>Delete <i class="fa-solid fa-trash-can fa-lg"></i></a></td>
-              </tr>
+
+                <tr class="clickable text-center">
+                  <td> {{i+1}} </td>
+                  <td><p>{{lists[i].name}}</p> </td>
+                  <td><a href="{{url_for('crud.view',id=lists[i].id)}}" class="btn btn-primary">Link <i class="fa-solid fa-arrow-up-right-from-square fa-lg"></i></a></td>
+                  <td> <a class="btn btn-danger delete-list" data-id={{lists[i].id}}>Delete <i class="fa-solid fa-trash-can fa-lg"></i></a></td>
+                </tr>
+
               {% endfor %}
             </table>
 
       </div>
     </div>
 
-
-      
         <script>
          
           deleteListBtns = document.querySelectorAll(".delete-list");
@@ -326,63 +136,69 @@
               console.log("Delete event: ", e);
               const listId = e.target.dataset.id;
 
-              fetch('lists/'+ listId + '/delete',{
+              fetch('categories/'+ listId,{
                 method: 'DELETE'
-              }).then(function() {
-                const item = e.target.parentElement.parentElement;
-                item.remove();
-                  document.getElementById("error").className = "hidden";
-                  window.location.reload(true);
-                })
-                .catch(function(e) {
-                  console.error(e);
-                  document.getElementById("error").className = "";
-                });
+              })
+              .then(function() {
+                var url = '?page=1';
+
+                if (deleteListBtns.length > 1){
+                  url = '?page={{ pagination.page }}';
+                }
+                else if({{ pagination.page }} > 1){
+                  url = '?page={{ pagination.page - 1 }}';
+                }
+                
+                window.location.replace(url);
+              });
             };
           }
         </script>
        
       {% endblock %}
       <br> 
-      {% if pagination %}
-        <!-- Pagination Links-->
-        <div class="text-center">
-            <a href="{{ url_for('crud.list', page=pagination.prev_num) }}"
-              class="btn btn-outline-dark 
-              {% if pagination.page == 1 or pagination.pages == 0  %}disabled{% endif %}">
-                &laquo;
-            </a>
-        <!-- Loop through the number of pages to display a link for each-->
-          {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
-            {% if page_num %}
-        <!-- Check for the active page and set the link to "Active"-->
-                    {% if pagination.page == page_num %}
-                    <a href="{{ url_for('crud.list', page=page_num) }}"
-                      class="btn btn-dark">
-                        {{ page_num }}
-                    </a>
-                    {% else %}
-                    <a href="{{ url_for('crud.list', page=page_num) }}"
-                      class="btn btn-outline-dark">
-                        {{ page_num }}
-                    </a>
-                    {% endif %}
-                {% else %}
-                    ...
-                {% endif %}
-            {% endfor %}
-            <a href="{{ url_for('crud.list', page=pagination.next_num) }}"
-              class="btn btn-outline-dark 
-              {% if pagination.page == pagination.pages or pagination.pages == 0 %}disabled{% endif %}">
-                &raquo;
-            </a>
-        </div>
-        {% if pagination.pages > 0%}
-        <p class="text-center mt-3">
-          Showing page {{ pagination.page }} of {{ pagination.pages }}
-        </p>
+
+      {% block paginate%}
+        {% if pagination %}
+          <!-- Pagination Links-->
+          <div class="text-center">
+              <a href="{{ url_for('crud.list', page=pagination.prev_num) }}"
+                class="btn btn-outline-dark 
+                {% if pagination.page == 1 or pagination.pages == 0  %}disabled{% endif %}">
+                  &laquo;
+              </a>
+          <!-- Loop through the number of pages to display a link for each-->
+            {% for page_num in pagination.iter_pages(left_edge=1, right_edge=1, left_current=1, right_current=2) %}
+              {% if page_num %}
+          <!-- Check for the active page and set the link to "Active"-->
+                      {% if pagination.page == page_num %}
+                      <a href="{{ url_for('crud.list', page=page_num) }}"
+                        class="btn btn-dark">
+                          {{ page_num }}
+                      </a>
+                      {% else %}
+                      <a href="{{ url_for('crud.list', page=page_num) }}"
+                        class="btn btn-outline-dark">
+                          {{ page_num }}
+                      </a>
+                      {% endif %}
+                  {% else %}
+                      ...
+                  {% endif %}
+              {% endfor %}
+              <a href="{{ url_for('crud.list', page=pagination.next_num) }}"
+                class="btn btn-outline-dark 
+                {% if pagination.page == pagination.pages or pagination.pages == 0 %}disabled{% endif %}">
+                  &raquo;
+              </a>
+          </div>
+          {% if pagination.pages > 0%}
+          <p class="text-center mt-3">
+            Showing page {{ pagination.page }} of {{ pagination.pages }}
+          </p>
+          {% endif %}
         {% endif %}
-      {% endif %}
+      {% endblock %}
             
         <br>
         <br>
@@ -396,6 +212,7 @@
             <div class="row">             
                 <div class="col-12 col-sm-4 align-self-center">
                     <div class="text-center">
+                        <a class="btn btn-social-icon btn-github" href="http://www.github.com/rabberdabber"> <i class="fa-brands fa-github fa-lg"></i></a>
                         <a class="btn btn-social-icon btn-linkedin" href="http://www.linkedin.com/in/bereket-assefa-251a79178/"><i class="fa-brands fa-linkedin fa-lg"></i></a>
                         <a class="btn btn-social-icon btn-google" href="http://youtube.com//channel/UCY9ko_oY6TA9WIVz_symvqA"><i class="fa-brands fa-youtube fa-lg"></i></a>
                         <a class="btn btn-social-icon btn-twitter" href="mailto:bereket@kakao.com"><i class="fa-solid fa-envelope fa-lg"></i></a>
@@ -413,6 +230,6 @@
         </div>
          
     </footer>
-    <script src="{{url_for('static',filename='script.js')}}"></script>
+    <script src="{{url_for('static',filename='js/script.js')}}"></script>
   </body>
 </html>

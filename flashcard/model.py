@@ -29,7 +29,15 @@ class Text(db.Model):
         'lists.id'), nullable=False)
 
     def __repr__(self):
-        return f'<Todo ID: {self.id}, word: {self.word}, translation: {self.word_translation}>'
+        return f'<Text ID: {self.id}, word: {self.word}, translation: {self.word_translation}>'
+    
+    def to_json(self):
+        return {
+            'id': self.id,
+            'word': self.word,
+            'word_translation': self.word_translation,
+            'list_id': self.list_id
+        }
 
 class List(db.Model):
     __tablename__ = "lists"
@@ -39,22 +47,20 @@ class List(db.Model):
     texts = db.relationship('Text', backref='list', lazy=True)
 
     def __repr__(self):
-        return f'<TodoList ID: {self.id}, name: {self.name}, todos: {self.todos}>'
+        return f'<List ID: {self.id}, name: {self.name}, texts: {self.texts}>'
     
-'''def list(limit=10, cursor=None):
-    cursor = int(cursor) if cursor else 0
-    query = (Todo.query
-             .order_by(Todo.id)
-             .limit(limit)
-             .offset(cursor))
-    todos = builtin_list(map(from_sql, query.all()))
-    next_page = cursor + limit if len(todos) == limit else None
-    return (todos, next_page)'''
- 
+    def to_json(self): 
+        return {
+            'id': self.id,
+            'name': self.name,
+            'text': [text.to_json() for text in self.texts]
+        }
+    
+
 def list(page,id,limit=8):
     pagination = Text.query.filter_by(list_id=id).paginate(page=page,per_page=limit)
-    todos_list = builtin_list(map(from_sql, pagination.items))
-    return pagination,todos_list
+    cards_list = builtin_list(map(from_sql, pagination.items))
+    return pagination,cards_list
 
 def list_categories(page,limit=5):
     pagination = List.query.paginate(page=page,per_page=limit)
@@ -71,24 +77,31 @@ def get_id(name):
     list = List.query.filter_by(name=name).first()
     return list.id if list is not None else None
 
-def create_todo(data):
-    todo = None
+def get_name(id):
+    name = Text.query.get(id).word
+    return name
+
+def get_card_id(word):
+    return Text.query.filter_by(word=word).first().id
+
+def create_card(data):
+    text = None
     try:
-        todo = Text(**data)
-        db.session.add(todo)
+        text = Text(**data)
+        db.session.add(text)
         db.session.commit()
     except:
-        todo = None
+        text = None
         db.session.rollback()
         print(sys.exc_info())
 
-    return todo
+    return text
 
-def search_todo(data):
-    todos = None
-    pagination = Text.query.filter_by(list_id=data['id']).filter_by(word=data['word']).paginate(page=1,per_page=5)
-    todos = builtin_list(map(from_sql, pagination.items))
-    return pagination,todos
+def search_card(id):
+    text = None
+    card = Text.query.get(id)
+    pagination = Text.query.filter_by(id=id).paginate(page=1,per_page=5)
+    return pagination,card
 
 def create_list(data):
     error = False
@@ -111,29 +124,11 @@ def create_list(data):
     return error,body
    
 
-def read(todo_id):
-    return None
-
-def update_todo(todo_id,completed):
-    todo = None
-    try:
-        todo = Text.query.get(todo_id)
-        print('Todo: ', todo)
-        todo.completed = completed
-        db.session.commit()
-    except:
-        db.session.rollback()
-        print(sys.exc_info())
-   
-    
-    return from_sql(todo) if todo is not None else None
-    
-
-def delete_todo(todo_id):
+def delete_card(id):
     error = False
     try:
-        todo = Text.query.get(todo_id)
-        db.session.delete(todo)
+        text = Text.query.get(id)
+        db.session.delete(text)
         db.session.commit()
     except:
         db.session.rollback()

@@ -1,6 +1,7 @@
 import logging
 
 from flask import current_app, Flask, redirect, url_for, render_template
+from flask_bootstrap import Bootstrap
 
 def create_app(config, debug=False, testing=False, config_overrides=None):
     app = Flask(__name__)
@@ -8,6 +9,7 @@ def create_app(config, debug=False, testing=False, config_overrides=None):
 
     app.debug = debug
     app.testing = testing
+    Bootstrap(app)
 
     if config_overrides:
         app.config.update(config_overrides)
@@ -22,10 +24,10 @@ def create_app(config, debug=False, testing=False, config_overrides=None):
         model.init_app(app)
         model._create_database()
 
-    # Register the Todos CRUD blueprint.
+    # Register the api CRUD blueprint.
     from .crud import crud
-    app.register_blueprint(crud, url_prefix='/todos')
-
+    app.register_blueprint(crud, url_prefix='/api/v1')
+   
     # Add a default root route.
     @app.route("/")
     def index():

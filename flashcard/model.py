@@ -3,6 +3,7 @@ from enum import unique
 from flask import Flask, request, abort, redirect, url_for, jsonify
 from flask_sqlalchemy import SQLAlchemy
 import sys
+from .forms import codes,languages
 
 builtin_list = list
 db = SQLAlchemy()
@@ -33,10 +34,12 @@ class Text(db.Model):
     
     def to_json(self):
         return {
-            'id': self.id,
+            'self_url': url_for('crud.view_card', id=self.id),
+            'categories_url': url_for('crud.view', id=self.list_id),
             'word': self.word,
-            'word_translation': self.word_translation,
-            'list_id': self.list_id
+            'id': self.id,
+            'category_name': get_list(self.list_id).name,
+            'translation': self.word_translation
         }
 
 class List(db.Model):
@@ -50,11 +53,42 @@ class List(db.Model):
         return f'<List ID: {self.id}, name: {self.name}, texts: {self.texts}>'
     
     def to_json(self): 
+        languages = self.name.split('->')
         return {
+            'self_url': url_for('crud.get_category', id=self.id),
+            'source': languages[0],
+            'target': languages[1],
             'id': self.id,
-            'name': self.name,
-            'text': [text.to_json() for text in self.texts]
+            'cards_url': url_for('crud.view_json', id=self.id),
+            'cards_count': len(self.texts)
         }
+    
+    def from_json(json_category):
+        source = json_category.get('source')
+        target = json_category.get('target')
+        
+        if source is None or target is None or not source in languages or not target in languages:
+            return {'message': 'unsupported language'},True
+        
+        name = source + " -> " + target
+        src_index = languages.index(source)
+        target_index = languages.index(target)
+        code = codes[src_index] + "->" + codes[target_index]
+        id = get_id(name)
+        
+        if id is not None:
+            return {'message': 'category already exists'},True
+        
+        data = {}
+        data['name'] = name
+        data['code'] = code
+        
+        error,list = create_list(data)
+        
+        if error:
+            return {'message': 'error creating category'},True
+            
+        return list,False
     
 
 def list(page,id,limit=8):
@@ -84,6 +118,9 @@ def get_name(id):
 def get_card_id(word):
     return Text.query.filter_by(word=word).first().id
 
+def get_card(id):
+    return Text.query.get(id)
+
 def create_card(data):
     text = None
     try:
@@ -110,18 +147,13 @@ def create_list(data):
         list = List(**data)
         db.session.add(list)
         db.session.commit()
-        body['id'] = list.id
-        body['name'] = list.name
-        body['code'] = list.code
     except:
         db.session.rollback()
         error = True
         body = None
         print(sys.exc_info)
-    finally:
-        db.session.close()
     
-    return error,body
+    return error,list
    
 
 def delete_card(id):
@@ -134,7 +166,7 @@ def delete_card(id):
         db.session.rollback()
         error = True
     
-    return {'success': True} if not error else None
+    return error
 
 def delete_list(list_id):
     error = False
@@ -148,12 +180,9 @@ def delete_list(list_id):
     except:
         db.session.rollback()
         error = True
-    finally:
-        db.session.close()
     
     return error
    
-
 
 def _create_database():
     app = Flask(__name__)

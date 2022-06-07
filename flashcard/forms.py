@@ -3,7 +3,7 @@ from wtforms import SelectField,SubmitField,StringField
 from wtforms.validators import DataRequired,ValidationError,InputRequired
 from flask_wtf import FlaskForm
 
-# fetch the available languages from the API instead of a list
+#fetch the available languages from the API instead of a list
 codes = ['en','es','fr','de','it','zh-CN','ja','ko','in','ru','th','vi','zh-TW']
 languages = ['English','Spanish','French','German','Italian','Simplified Chinese','Japanese','Korean','Indonesian','Russian','Vietnamese','Thai','Traditional Chinese']
 choices = list(zip(codes,languages))

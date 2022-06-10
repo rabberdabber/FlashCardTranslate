@@ -34,12 +34,12 @@
       
               {%block navigator%}
               <ul class="navbar-nav mr-auto">
-                <li class="nav-item active"><a class="nav-link" href="#"><span class="fa fa-home fa-lg"> </span><small>Home</small></a></li>
-                <li class="nav-item"><a class="nav-link" href="../../contact.html"><span class="fa fa-info fa-lg"></span><small> Contact</small></a></li>
+                <li class="nav-item active"><a class="nav-link" href="#"><span class="fa fa-home fa-lg"> </span>Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="../../contact.html"><span class="fa fa-info fa-lg"></span>Contact</a></li>
               </ul>
               <ul class="navbar-nav ml-auto"> 
-                <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-sign-in fa-lg"></span><small>Login</small></a></li>
-                <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-user-plus fa-lg"></span><small>SignUp</small></a></li>
+                 <li class="nav-item"><a class="nav-link" href="{{url_for('api_test')}}"><span class="fa fa-info fa-lg"></span>API</a></li>
+                <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}"><span class="fa fa-sign-out fa-lg"></span>Logout</a></li>
               </ul>
               {%endblock%}
 
@@ -116,7 +116,7 @@
                 <tr class="clickable text-center">
                   <td> {{i+1}} </td>
                   <td><p>{{lists[i].name}}</p> </td>
-                  <td><a href="{{url_for('crud.view',id=lists[i].id)}}" class="btn btn-primary">Link <i class="fa-solid fa-arrow-up-right-from-square fa-lg"></i></a></td>
+                  <td><a href="{{url_for('main.view',id=lists[i].id)}}" class="btn btn-primary">Link <i class="fa-solid fa-arrow-up-right-from-square fa-lg"></i></a></td>
                   <td> <a class="btn btn-danger delete-list" data-id={{lists[i].id}}>Delete <i class="fa-solid fa-trash-can fa-lg"></i></a></td>
                 </tr>
 
@@ -162,7 +162,7 @@
         {% if pagination %}
           <!-- Pagination Links-->
           <div class="text-center">
-              <a href="{{ url_for('crud.list', page=pagination.prev_num) }}"
+              <a href="{{ url_for('main.list', page=pagination.prev_num) }}"
                 class="btn btn-outline-dark 
                 {% if pagination.page == 1 or pagination.pages == 0  %}disabled{% endif %}">
                   &laquo;
@@ -172,12 +172,12 @@
               {% if page_num %}
           <!-- Check for the active page and set the link to "Active"-->
                       {% if pagination.page == page_num %}
-                      <a href="{{ url_for('crud.list', page=page_num) }}"
+                      <a href="{{ url_for('main.list', page=page_num) }}"
                         class="btn btn-dark">
                           {{ page_num }}
                       </a>
                       {% else %}
-                      <a href="{{ url_for('crud.list', page=page_num) }}"
+                      <a href="{{ url_for('main.list', page=page_num) }}"
                         class="btn btn-outline-dark">
                           {{ page_num }}
                       </a>
@@ -186,7 +186,7 @@
                       ...
                   {% endif %}
               {% endfor %}
-              <a href="{{ url_for('crud.list', page=pagination.next_num) }}"
+              <a href="{{ url_for('main.list', page=pagination.next_num) }}"
                 class="btn btn-outline-dark 
                 {% if pagination.page == pagination.pages or pagination.pages == 0 %}disabled{% endif %}">
                   &raquo;

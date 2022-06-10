@@ -3,13 +3,13 @@
 {% block navigator%}
    
     <ul class="navbar-nav mr-auto">
-        <li class="nav-item"><a class="nav-link" href="/"><span class="fa fa-home fa-lg"> </span><small>Home</small></a></li>
-        <li class="nav-item active"><a class="nav-link" href="#"><span class="fa fa-info fa-lg"></span><small> Contact</small></a></li>
+        <li class="nav-item"><a class="nav-link" href="flashcards/categories"><span class="fa fa-home fa-lg"> </span>Home</a></li>
+        <li class="nav-item active"><a class="nav-link" href="#"><span class="fa fa-info fa-lg"></span> Contact</a></li>
     </ul>
 
     <ul class="navbar-nav ml-auto"> 
-        <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-sign-in fa-lg"></span><small>Login</small></a></li>
-        <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-user-plus fa-lg"></span><small>SignUp</small></a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('api_test')}}"><span class="fa fa-info fa-lg"></span>API</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}"><span class="fa fa-sign-out fa-lg"></span>Logout</a></li>
     </ul>
 {% endblock %}
 
@@ -18,7 +18,7 @@
     
     <div class="container">
         <ol class="col-12 breadcrumb">
-                <li class="breadcrumb-item"><a href="/">Home</a></li>
+                <li class="breadcrumb-item"><a href="flashcards/categories">Home</a></li>
                 <li class="breadcrumb-item active"> Contact</li>
         </ol>
 

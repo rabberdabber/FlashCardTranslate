@@ -1,6 +1,6 @@
 
 from enum import unique
-from flask import Flask, request, abort, redirect, url_for, jsonify
+from flask import Flask, request, abort, redirect, url_for, jsonify, session
 from flask_sqlalchemy import SQLAlchemy
 import sys
 from .forms import codes,languages
@@ -34,8 +34,8 @@ class Text(db.Model):
     
     def to_json(self):
         return {
-            'self_url': url_for('crud.view_card', id=self.id),
-            'categories_url': url_for('crud.view', id=self.list_id),
+            'self_url': url_for('api.view_card_json', id=self.id),
+            'categories_url': url_for('api.view_json', id=self.list_id),
             'word': self.word,
             'id': self.id,
             'category_name': get_list(self.list_id).name,
@@ -46,6 +46,7 @@ class List(db.Model):
     __tablename__ = "lists"
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(), nullable=False)
+    owner = db.Column(db.String(), nullable=False)
     code = db.Column(db.String(), nullable=False)
     texts = db.relationship('Text', backref='list', lazy=True)
 
@@ -55,11 +56,11 @@ class List(db.Model):
     def to_json(self): 
         languages = self.name.split('->')
         return {
-            'self_url': url_for('crud.get_category', id=self.id),
+            'self_url': url_for('api.get_category', id=self.id),
             'source': languages[0],
             'target': languages[1],
             'id': self.id,
-            'cards_url': url_for('crud.view_json', id=self.id),
+            'cards_url': url_for('api.view_json', id=self.id),
             'cards_count': len(self.texts)
         }
     
@@ -97,18 +98,18 @@ def list(page,id,limit=8):
     return pagination,cards_list
 
 def list_categories(page,limit=5):
-    pagination = List.query.paginate(page=page,per_page=limit)
+    pagination = List.query.filter_by(owner=session['sub']).paginate(page=page,per_page=limit)
     list = builtin_list(map(from_sql, pagination.items))
     return pagination,list
         
 def get_lists():
-    return List.query.all()
+    return List.query.filter_by(owner=session['sub']).all()
 
 def get_list(id):
     return List.query.get(id)
 
 def get_id(name):
-    list = List.query.filter_by(name=name).first()
+    list = List.query.filter_by(name=name).filter_by(owner=session['sub']).first()
     return list.id if list is not None else None
 
 def get_name(id):
@@ -116,7 +117,8 @@ def get_name(id):
     return name
 
 def get_card_id(word):
-    return Text.query.filter_by(word=word).first().id
+    card = Text.query.filter_by(word=word).first()
+    return card.id if get_list(card.list_id).owner == session['sub'] else None
 
 def get_card(id):
     return Text.query.get(id)
@@ -137,12 +139,17 @@ def create_card(data):
 def search_card(id):
     text = None
     card = Text.query.get(id)
-    pagination = Text.query.filter_by(id=id).paginate(page=1,per_page=5)
+    list = get_list(card.list_id)
+    if list.owner != session['sub']:
+        return abort(404)
+    pagination = Text.query.filter_by(id=id).filter_by(list).paginate(page=1,per_page=5)
     return pagination,card
 
 def create_list(data):
     error = False
     body = {}
+    list = None
+    print(data)
     try:
         list = List(**data)
         db.session.add(list)
@@ -151,7 +158,7 @@ def create_list(data):
         db.session.rollback()
         error = True
         body = None
-        print(sys.exc_info)
+        print(sys.exc_info())
     
     return error,list
    
@@ -159,19 +166,26 @@ def create_list(data):
 def delete_card(id):
     error = False
     try:
+
         text = Text.query.get(id)
+        if get_list(text.list_id).owner != session['sub']:
+            abort(401)
+            
         db.session.delete(text)
         db.session.commit()
     except:
         db.session.rollback()
         error = True
+        print(sys.exc_info())
     
     return error
 
 def delete_list(list_id):
     error = False
     try:
-        list = List.query.get(list_id)
+        print(session['sub'])
+        list = List.query.filter_by(owner=session['sub']).filter_by(id=list_id).first()
+        print(list)
         for text in list.texts:
             db.session.delete(text)
 
@@ -180,13 +194,16 @@ def delete_list(list_id):
     except:
         db.session.rollback()
         error = True
+        print(sys.exc_info())
     
     return error
    
 
 def _create_database():
     app = Flask(__name__)
-    app.config.from_pyfile('../config.py')
+    sys.path.append('../')
+    from config import Config
+    app.config.from_object(Config)
     init_app(app)
     with app.app_context():
         db.create_all()

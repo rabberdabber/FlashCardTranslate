@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block navigator%}
+    <ul class="navbar-nav ml-auto"> 
+         <li class="nav-item"><a class="nav-link" href="{{url_for('login')}}"><span class="fa fa-sign-in fa-lg"></span> Login</a></li>
+    </ul>
+{% endblock %}
+
+{% block content %}
+    <header class="jumbotron">
+        <div class="container">
+            <div class="row row-header">
+                <div class="col-12 text-center">
+                    <i class="fa-light fa-cards-blank fa-3x"></i>
+                    <h1>Welcome to FlashCards</h1>
+                    <p> This application is made for people who want to learn new Languages </p>
+                    <p> Login to continue </p>
+                    
+                <div class="col-12 col-sm">
+            </div>
+        </div>
+    </header>
+{% endblock %}

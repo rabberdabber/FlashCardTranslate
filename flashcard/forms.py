@@ -1,5 +1,5 @@
 from tokenize import String
-from wtforms import SelectField,SubmitField,StringField
+from wtforms import SelectField,SubmitField,StringField,IntegerField
 from wtforms.validators import DataRequired,ValidationError,InputRequired
 from flask_wtf import FlaskForm
 
@@ -25,5 +25,15 @@ class WordForm(FlaskForm):
     text = StringField('text',validators=[InputRequired()])
     add = SubmitField('Add')
     search = SubmitField('Search')
+    
+class ApiForm(FlaskForm):
+    method = SelectField('method',choices=['GET','POST','DELETE'],validators=[InputRequired()])
+    resource = SelectField('resource',choices=['categories','cards','card from category','category','card'],validators=[InputRequired()])
+    category_id = IntegerField('category_id',default=0)
+    card_id = IntegerField('card_id',default=0)
+    word = StringField('word')
+    source = StringField('source')
+    target = StringField('target')
+    submit = SubmitField('submit')
     
     

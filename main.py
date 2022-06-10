@@ -1,7 +1,9 @@
 import flashcard
-import config
+import sys 
+from dotenv import load_dotenv,find_dotenv
+print(load_dotenv(find_dotenv()))
 
-app = flashcard.create_app(config)
+app = flashcard.create_app()
 
 if __name__ == "__main__":
    app.run(host="127.0.0.1",port=5555,debug=True)

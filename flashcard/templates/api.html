@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block navigator%}
+     <ul class="navbar-nav mr-auto">
+        <li class="nav-item"><a class="nav-link" href="../flashcards/categories"><span class="fa fa-home fa-lg"> </span>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="../../contact.html"><span class="fa fa-info fa-lg"></span>Contact</a></li>
+     </ul>
+
+     <ul class="navbar-nav ml-auto"> 
+        <li class="nav-item active"><a class="nav-link" href="#"><span class="fa fa-info fa-lg"></span> API</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}"><span class="fa fa-sign-out fa-lg"></span>Logout</a></li>
+     </ul>
+{% endblock %}
+
+{% block content %}
+    <header class="jumbotron">
+        <div class="container">
+            <div class="row row-header">
+                <div class="col-12 text-center">
+                    <i class="fa-light fa-cards-blank fa-3x"></i>
+                    <h1>Welcome to FlashCards</h1>
+                    <p> You can test the api by copying the command and pasting it in your command line </p>
+                    <p> GET,POST,DELETE are supported </p>
+                    
+                    
+                <div class="col-12 col-sm">
+            </div>
+        </div>
+    </header>
+    <br>
+    <div class="container">
+        <div class="row row-header">
+
+            {% block crumbs%}
+                <ol class="col-12 breadcrumb">
+                    <li class="breadcrumb-item"><a href="../flashcards/categories">Home</a></li>
+                    <li class="breadcrumb-item active">API</li>
+                </ol>
+
+            {% endblock%}
+
+            <form action="/test_api" method="POST" id="card-form" name="word-form">
+                <label> <p>method type, resource, category and card ID</p> </label>
+                <div class="form-group">
+                    {{ form.hidden_tag() }}
+                    {{ wtf.form_errors(form, hiddens="only") }}
+                    <a> method </a>
+                    {{form.method}}
+                    <a>resource</a>
+                    {{form.resource}}
+                    <a> categoryID</a>
+                    {{form.category_id}}
+                    <a> CardID</a>
+                    {{form.card_id}}
+                </div>
+                <label> <p>word, source, target for POST method</p> </label>
+                <div class="form-group">
+                    <a> word </a>
+                    {{form.word}}
+                    <a> source </a>
+                    {{form.source}}
+                    <a> target </a>
+                    {{form.target}}
+                    {{form.submit(class="btn btn-success")}}
+                </div>
+            </form>
+ 
+        </div>
+    </div> 
+
+   
+   
+    <div class="container">
+        <div class="row row-header">
+        {% if curl_string%}
+            <div class="col-md-8">
+                <label><stong> Copy the command and paste it in your command line </strong> </label>
+                <textarea class="form-control" id="command_string" name="command_string" rows="12">{{curl_string}}</textarea>
+            </div>
+            <div class="align-bottom">
+            <a class=" btn btn-success" onclick="copy_command()"> <i class="fa-solid fa-copy fa-lg"></i> Copy </a>
+            </div>
+            
+        {% endif %}
+        </div>
+    </div>
+
+    <br>
+    <br>
+    <script>
+        async function copyTargetText(e) {
+        try {
+            await navigator.clipboard.writeText(e.value);
+        } catch (err) {
+            console.error("Failed to copy: ", err);
+            }
+        }
+
+
+        function copy_command(){
+            text = document.getElementById("command_string");
+            copyTargetText(text);
+        };
+        
+    
+    </script>
+    
+{% endblock %}

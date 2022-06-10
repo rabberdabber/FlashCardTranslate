@@ -2,13 +2,13 @@
 
 {% block navigator%}
     <ul class="navbar-nav mr-auto">
-        <li class="nav-item active"><a class="nav-link" href="/"><span class="fa fa-home fa-lg"> </span><small>Home</small></a></li>
-        <li class="nav-item"><a class="nav-link" href="../../contact.html"><span class="fa fa-info fa-lg"></span><small> Contact</small></a></li>
+        <li class="nav-item active"><a class="nav-link" href="/categories"><span class="fa fa-home fa-lg"> </span>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="../../contact.html"><span class="fa fa-info fa-lg"></span>Contact</a></li>
     </ul>
 
     <ul class="navbar-nav ml-auto"> 
-        <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-sign-in fa-lg"></span><small>Login</small></a></li>
-        <li class="nav-item"><a class="nav-link" href="#"><span class="fa fa-user-plus fa-lg"></span><small>SignUp</small></a></li>
+            <li class="nav-item"><a class="nav-link" href="{{url_for('api_test')}}"><span class="fa fa-info fa-lg"></span>API</a></li>
+            <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}"><span class="fa fa-sign-out fa-lg"></span>Logout</li>
     </ul>
 {% endblock %}
 
@@ -31,7 +31,7 @@
 
             {% block crumbs%}
                 <ol class="col-12 breadcrumb">
-                    <li class="breadcrumb-item"><a href="/">Home</a></li>
+                    <li class="breadcrumb-item"><a href="../../categories">Home</a></li>
                     <li class="breadcrumb-item active"> Cards</li>
                 </ol>
             {% endblock%}
@@ -124,7 +124,7 @@
     {% if pagination %}
             <!-- Pagination Links-->
             <div class="text-center">
-                <a href="{{ url_for('crud.view',id= active_list.id,page=pagination.prev_num) }}"
+                <a href="{{ url_for('main.view',id= active_list.id,page=pagination.prev_num) }}"
                     class="btn btn-outline-dark 
                     {% if pagination.page == 1 or pagination.pages == 0  %}disabled{% endif %}">
                     &laquo;
@@ -134,12 +134,12 @@
                 {% if page_num %}
             <!-- Check for the active page and set the link to "Active"-->
                         {% if pagination.page == page_num %}
-                         <a href="{{ url_for('crud.view',id=active_list.id,page=page_num) }}"
+                         <a href="{{ url_for('main.view',id=active_list.id,page=page_num) }}"
                             class="btn btn-dark">
                             {{ page_num }}
                         </a>
                         {% else %}
-                       <a href="{{ url_for('crud.view',id=active_list.id,page=page_num) }}"
+                       <a href="{{ url_for('main.view',id=active_list.id,page=page_num) }}"
                             class="btn btn-outline-dark">
                             {{ page_num }}
                         </a>
@@ -148,7 +148,7 @@
                         ...
                     {% endif %}
                 {% endfor %}
-                 <a href="{{ url_for('crud.view',id=active_list.id,page=pagination.prev_num) }}"
+                 <a href="{{ url_for('main.view',id=active_list.id,page=pagination.prev_num) }}"
                     class="btn btn-outline-dark 
                     {% if pagination.page == pagination.pages or pagination.pages == 0 %}disabled{% endif %}">
                     &raquo;

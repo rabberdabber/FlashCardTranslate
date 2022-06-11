@@ -19,8 +19,9 @@ def not_found(error):
 def bad_request(error):
     return jsonify({
         'success':False,
+        'error': 400,
         'message':'Invalid or Inconsistent request'
-         }),400
+    }),400
     
 @api.errorhandler(500)
 def server_error(error):
@@ -49,7 +50,7 @@ def create_card_json(word,id):
     return card_response_json(card)
 
 
-''' JSON API implementation '''
+''' REST API implementation '''
 
 @api.route('/categories/<int:id>/json', methods=['GET'])
 @requires_auth('read:category')
@@ -64,7 +65,7 @@ def get_category(payload,id):
 @api.route('/categories/json', methods=['GET'])
 @api.route("/json",methods=['GET'])
 @requires_auth('read:category')
-def list_json(payload):
+def get_categories(payload):
     page = request.args.get('page', 1, type=int)
     pagination,_ = model.list_categories(page)
     
@@ -85,7 +86,7 @@ def list_json(payload):
 
 @api.route("/categories/<int:id>/cards/json",methods=["GET"])
 @requires_auth('read:card')
-def view_json(payload,id):
+def get_cards(payload,id):
     page = request.args.get('page', 1, type=int)
     pagination,_ = model.list(page,id)
   
@@ -103,7 +104,7 @@ def view_json(payload,id):
     
 @api.route("/cards/<int:id>/json",methods=["GET"])
 @requires_auth('read:card')
-def view_card_json(payload,id):
+def get_card(payload,id):
     page = request.args.get('page', 1, type=int)  
     
     if model.get_card(id):
@@ -125,38 +126,50 @@ def view_card_json(payload,id):
 
 @api.route('/categories/json', methods=['POST'])
 @requires_auth('create:category')
-def create_categories_json(payload):
+def post_category(payload):
     if request.json:
         data = request.json
         result,error = model.List.from_json(data)
         if not error:
-            print(result)
-            return jsonify(result.to_json()),201
+            response = {}
+            response['category'] = result.to_json()
+            response['success'] = True
+            response['message'] = 'successfully added category'
+            return jsonify(response),201
         else:
             result["success"] = False
+            id = model.get_id(data['source'] + ' -> ' + data['target'])
+            result['category_id'] = id
             if result['message'] == 'category already exists':
                 return jsonify(result),409
             return bad_request(400)
+    else:
+        return bad_request(400)
+        
         
         
 @api.route('/cards/json', methods=['POST'])
 @requires_auth('create:card')
-def create_cards_json(payload):
-    word = request.json.get('word')
-    category_id = request.json.get('category_id')
-    if not request.json or word is None or category_id is None:
+def post_card(payload):
+    data = request.json
+    word = data.get('word')
+    category_id = int(data.get('category_id'))
+    if not request.json or word is None:
         return bad_request(None)
-    else:
+    else: 
         category = model.get_list(category_id)
         if not category:
-            return not_found(None)
+            category_id = model.get_id_from_data(data)
+                 
+            if not category_id:
+                return jsonify({'error':404,'message':'category not found','success': False})
         
         return create_card_json(word,category_id)
 
         
 @api.route("/categories/<int:id>/cards/json",methods=["POST"])
 @requires_auth('create:card')
-def append_card_json(payload,id):
+def post_card_from_category(payload,id):
     category = model.get_list(id)
     word = request.json.get('word')
     if not category:
@@ -170,7 +183,7 @@ def append_card_json(payload,id):
     
 @api.route('/cards/<int:id>/json', methods=['DELETE'])
 @requires_auth('delete:card')
-def delete_cards_json(payload,id):
+def delete_card(payload,id):
     data = model.delete_card(id)
     
     if data is None:
@@ -180,7 +193,10 @@ def delete_cards_json(payload,id):
     
 @api.route('/categories/<int:id>/json', methods=['DELETE'])
 @requires_auth('delete:category')
-def delete_categories_json(payload,id):
+def delete_category(payload,id):
+    if id < 0:
+        return not_found(None)
+    
     error = model.delete_list(id)
     
     if error:

@@ -9,32 +9,36 @@ from .main import main_crud
 from .api import api_crud
 from .forms import ApiForm
 import sys
+import json
 
 sys.path.append('../')
 from config import Config
 from authlib.integrations.flask_client import OAuth
+import requests
 
 from dotenv import load_dotenv,find_dotenv
 load_dotenv(find_dotenv(sys.path[1]))
 
 
-'helper function'
+'''helper function'''
+
 def get_uri(form):
     uri_map = {}
-    uri_map[('DELETE','category')] = url_for('api.delete_categories_json',id=form.category_id.data)
-    uri_map[('DELETE','card')] = url_for('api.delete_cards_json',id=form.card_id.data)
-    uri_map[('GET','categories')] = url_for('api.list_json')
+    
     uri_map[('GET','category')] = url_for('api.get_category',id=form.category_id.data)
-    uri_map[('GET','cards')] = url_for('api.view_json',id=form.category_id.data)
-    uri_map[('GET','card')] = url_for('api.view_card_json',id=form.card_id.data)
-    uri_map[('POST','categories')] = url_for('api.create_categories_json')
-    uri_map[('POST','card from category')] = url_for('api.append_card_json',id=form.category_id.data)
-    uri_map[('POST','card')] = url_for('api.create_cards_json')
+    uri_map[('GET','categories')] = url_for('api.get_categories')
+    uri_map[('GET','cards')] = url_for('api.get_cards',id=form.category_id.data)
+    uri_map[('GET','card')] = url_for('api.get_card',id=form.card_id.data)
+    uri_map[('POST','category')] = url_for('api.post_category')
+    uri_map[('POST','card')] = url_for('api.post_card')
+    uri_map[('POST','card_from_category')] = url_for('api.post_card_from_category',id=form.category_id.data)
+    uri_map[('DELETE','card')] = url_for('api.delete_card',id=form.card_id.data)
+    uri_map[('DELETE','category')] = url_for('api.delete_category',id=form.category_id.data)
+   
     
     return uri_map.get((form.method.data,form.resource.data))
     
     
-
 def create_app(config=Config, debug=False, testing=False, config_overrides=None):
     app = Flask(__name__)
     app.config.from_object(config)
@@ -53,7 +57,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
         },
         server_metadata_url=f'https://{Config.AUTH0_DOMAIN}/.well-known/openid-configuration',
     )
-    
+  
     if config_overrides:
         app.config.update(config_overrides)
 
@@ -68,7 +72,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
         model._create_database()
         CORS(app)
 
-
+    app.config['SERVER_NAME'] = 'localhost:5555'
     # Register blueprints.
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint, url_prefix='/flashcards')
@@ -112,28 +116,44 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
                     flash("This combination of method and resource is not supported, please submit a valid input!")
                     return render_template('api.html',form=form,id_token=session['id_token'])
                 
-                curl_string = '''curl -X {} http://127.0.0.1:5555{} -H "Content-Type:application/json" -H "Authorization: Bearer {}"
+                json_dict = {'word':form.word.data,'category_id':str(form.category_id.data),'source':form.source.data,'target':form.target.data,'owner':session['sub']}
+                
+                if form.method.data != 'POST':
+                    curl_string = '''curl -X {} http://localhost:5555{} -H "Content-Type:application/json" -H "Authorization: Bearer {}"
                         '''.format(form.method.data,uri,session['id_token'])
+                        
+                else:
+                    curl_string = '''curl -X {} http://localhost:5555{} -H "Content-Type:application/json" -H "Authorization: Bearer {}" -d '{}' '''.format(form.method.data,uri,session['id_token'],json.dumps(json_dict))
             
                 if form.method.data == 'POST':
-                    if form.resource.data == 'categories':
+                    if form.resource.data not in ['category','card']:
+                        flash("This combination of method and resource is not supported, please submit a valid input!")
+                        return render_template('api.html',form=form,id_token=session['id_token'])
+                    
+                    if form.resource.data == 'category':
                         if form.source is None or form.target is None:
                             flash('source or target is missing')
                             return render_template('api.html',form=form,id_token=session['id_token'])
-                        
-                        json = {"source":form.source.data,"target":form.target.data}            
-                    else:
+                            
+                               
+                    elif form.resource.data == 'card':
                         if form.word is None or form.category_id is None:
                             flash('word or category_id is missing')
                             return render_template('api.html',form=form,id_token=session['id_token'])
                         
-                        json = {"word":form.word.data,"category_id":form.category_id.data}
+                response = None
+                headers = {
+                                "Content-Type": "application/json",
+                                "Authorization": "Bearer {}".format(session['id_token'])
+                          }
+                
+                url = 'http://localhost:5555'+uri
+                if form.method.data == "POST":
+                    response = requests.request('POST',url,headers=headers,params=json_dict)
+                else:
+                    response = requests.request(form.method.data,url,headers=headers)
                     
-                    
-                    curl_string += " -d '{json}'"
-                    
-                    
-                return render_template('api.html',form=form,id_token=session['id_token'],curl_string=curl_string)
+                return render_template('api.html',form=form,curl_string=curl_string,response=response.json())
         
             else:
                 print('not validated')
@@ -154,7 +174,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
     @app.route('/callback')
     def callback():
         token = oauth.auth0.authorize_access_token()
-         # do something with the token
+        # fetch the token
          
         session['sub'] = token.get('userinfo').get('sub')
         session['id_token'] = token.get('id_token')
@@ -168,7 +188,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
         session.clear()
         client_id = Config.AUTH0_CLIENTID
         domain = Config.AUTH0_DOMAIN
-        return_to = 'http://127.0.0.1:5555/'
+        return_to = 'http://localhost:5555/'
         return redirect(
             f'https://{domain}/v2/logout?client_id={client_id}&returnTo={return_to}',
             code=302,

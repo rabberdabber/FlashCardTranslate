@@ -64,7 +64,9 @@ header {
     border-top: 1px ridge;
     border-top-color: black;
     background-color: #d1c4E9;
-    height: 30px;
+    height: 150px;
+    bottom: 0%;
+    width: 100%;
 }
 
 .jumbotron {

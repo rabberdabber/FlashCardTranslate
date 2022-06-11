@@ -28,9 +28,9 @@ class WordForm(FlaskForm):
     
 class ApiForm(FlaskForm):
     method = SelectField('method',choices=['GET','POST','DELETE'],validators=[InputRequired()])
-    resource = SelectField('resource',choices=['categories','cards','card from category','category','card'],validators=[InputRequired()])
-    category_id = IntegerField('category_id',default=0)
-    card_id = IntegerField('card_id',default=0)
+    resource = SelectField('resource',choices=['categories','cards','card_from_category','category','card'],validators=[InputRequired()])
+    category_id = IntegerField('category_id',default=-1)
+    card_id = IntegerField('card_id',default=-1)
     word = StringField('word')
     source = StringField('source')
     target = StringField('target')

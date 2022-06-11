@@ -134,6 +134,7 @@ def requires_auth(permission=''):
             payload = verify_decode_jwt(token)
             if 'sub' not in session:
                 session['sub'] = payload['sub']
+                session['id_token'] = token
             return f(payload, *args, **kwargs)
         return wrapper
     return requires_auth_decorator

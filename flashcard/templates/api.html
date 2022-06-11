@@ -28,6 +28,16 @@
         </div>
     </header>
     <br>
+
+     <div class="container">
+          {% for message in get_flashed_messages() %}
+                <div class="alert alert-warning">
+                    <button type="button" class="close" data-dismiss="alert">&times;</button>
+                    {{ message }}
+                </div>
+          {% endfor %}
+    </div>
+
     <div class="container">
         <div class="row row-header">
 
@@ -72,16 +82,23 @@
    
     <div class="container">
         <div class="row row-header">
-        {% if curl_string%}
-            <div class="col-md-8">
-                <label><stong> Copy the command and paste it in your command line </strong> </label>
-                <textarea class="form-control" id="command_string" name="command_string" rows="12">{{curl_string}}</textarea>
-            </div>
-            <div class="align-bottom">
-            <a class=" btn btn-success" onclick="copy_command()"> <i class="fa-solid fa-copy fa-lg"></i> Copy </a>
-            </div>
-            
-        {% endif %}
+            {% if curl_string%}
+                <div class="col-md-8">
+                    <label><strong> Copy the command and paste it in your command line </strong> </label>
+                    <textarea class="form-control" id="command_string" name="command_string" rows="12">{{curl_string}}</textarea>
+                </div>
+                <div class="align-bottom">
+                    <a class=" btn btn-success" onclick="copy_command()"> <i class="fa-solid fa-copy fa-lg"></i> Copy </a>
+                </div>
+                
+            {% endif %}
+        </div>
+    <div class="container">
+        <div class="row row-header" style="border-style: 1 px solid;">
+            {% if response %}
+            <label> <strong> Sample output </strong> </label>
+            <p> {{response}}</p> 
+            {% endif %}
         </div>
     </div>
 

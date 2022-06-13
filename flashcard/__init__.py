@@ -113,7 +113,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
                 uri = get_uri(form)
             
                 if not uri:
-                    flash("This combination of method and resource is not supported, please submit a valid input!")
+                    flash("This combination of method, resource and other inputs is not supported, please submit a valid input!")
                     return render_template('api.html',form=form,id_token=session['id_token'])
                 
                 json_dict = {'word':form.word.data,'category_id':str(form.category_id.data),'source':form.source.data,'target':form.target.data,'owner':session['sub']}
@@ -144,19 +144,29 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
                 response = None
                 headers = {
                                 "Content-Type": "application/json",
-                                "Authorization": "Bearer {}".format(session['id_token'])
+                                "Authorization": "Bearer {}".format(session['id_token']),
+                                "Accept": "application/json"
                           }
                 
                 url = 'http://localhost:5555'+uri
-                if form.method.data == "POST":
-                    response = requests.request('POST',url,headers=headers,params=json_dict)
-                else:
-                    response = requests.request(form.method.data,url,headers=headers)
-                    
-                return render_template('api.html',form=form,curl_string=curl_string,response=response.json())
+                
+                try:
+                    if form.method.data == "POST":
+                        response = requests.post(url,headers=headers,json=json_dict)
+                    else:
+                        response = requests.request(form.method.data,url,headers=headers)
+                    if response.ok:
+                        print('ok')
+                        print(response.json())
+                    else:
+                        print('not ok')
+                    return render_template('api.html',form=form,curl_string=curl_string,response=response.json())
+                except:
+                    flash('the given method failed')
+                    return render_template('api.html',form=form,curl_string=curl_string)
         
             else:
-                print('not validated')
+                flash('not a valid input')
                 print(form.errors.items())
                 return render_template('api.html',form=form,id_token=session['id_token'])
             

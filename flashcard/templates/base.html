@@ -103,28 +103,23 @@
         <br>
         <div class="container">
           <div class="row">
-            <table class="w-100">
-
-              <tr class="text-center">
-                <th> Id </th>
-                <th> Language Category</th>
-                <th> Link to Cards </th>
-                <th> Delete Category </th>
-              </tr>
-
                {% for i in range(lists|length)%}
 
-                <tr class="clickable text-center">
-                  <td> {{i+1}} </td>
-                  <td><p>{{lists[i].name}}</p> </td>
-                  <td><a href="{{url_for('main.view',id=lists[i].id)}}" class="btn btn-primary">Link <i class="fa-solid fa-arrow-up-right-from-square fa-lg"></i></a></td>
-                  <td> <a class="btn btn-danger delete-list" data-id={{lists[i].id}}>Delete <i class="fa-solid fa-trash-can fa-lg"></i></a></td>
-                </tr>
+                  <div class="card">
+                    <div class="card-body img-fluid">
+                        <div>
+                        <h1 class="card-title"><a href="{{url_for('main.view',id=lists[i].id)}}" class="btn btn-primary">{{lists[i].name}}</a></h1>
+                        <h6 class="card-subtitle mb-2 text-muted">{{lists[i].cnt}} Cards</h6>
+                        </div>
+                        <div class="text-right">
+                          <a class="btn btn-danger delete-list align-right" data-id={{lists[i].id}}>Delete<i class="fa-solid fa-trash-can fa-lg"></i></a>
+                        </div>
+                    </div>
+                </div>
 
               {% endfor %}
             </table>
-
-      </div>
+          </div>
     </div>
 
         <script>
@@ -207,7 +202,8 @@
       
     </div>
 
-     <footer class="footer">
+    {% block footer %}
+     <footer class=" footer">
        <br>
         <div class="container">
             <div class="row">             
@@ -231,6 +227,8 @@
         </div>
          
     </footer>
+    {% endblock %}
+
     <script src="{{url_for('static',filename='js/script.js')}}"></script>
   </body>
 </html>

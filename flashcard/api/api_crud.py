@@ -127,9 +127,12 @@ def get_card(payload,id):
 @api.route('/categories/json', methods=['POST'])
 @requires_auth('create:category')
 def post_category(payload):
+    
     if request.json:
         data = request.json
+        print(data)
         result,error = model.List.from_json(data)
+
         if not error:
             response = {}
             response['category'] = result.to_json()
@@ -142,12 +145,13 @@ def post_category(payload):
             result['category_id'] = id
             if result['message'] == 'category already exists':
                 return jsonify(result),409
+            
             return bad_request(400)
+    
     else:
         return bad_request(400)
-        
-        
-        
+    
+    
 @api.route('/cards/json', methods=['POST'])
 @requires_auth('create:card')
 def post_card(payload):
@@ -189,7 +193,7 @@ def delete_card(payload,id):
     if data is None:
         return not_found(None)
     else:
-        return jsonify({'success':True,'message': 'card deleted'}),204
+        return jsonify({'success':True,'message': 'card deleted'})
     
 @api.route('/categories/<int:id>/json', methods=['DELETE'])
 @requires_auth('delete:category')
@@ -202,5 +206,5 @@ def delete_category(payload,id):
     if error:
         return not_found(None)
     else:
-        return jsonify({'success':True,'message': 'category deleted'}),204
+        return jsonify({'success':True,'message': 'category deleted'})
     

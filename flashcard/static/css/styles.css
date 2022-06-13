@@ -125,3 +125,12 @@ form {
 .flashcard {
     width: 25%;
 }
+
+.iconify[data-icon='fluent:stack-24-filled']{
+    color: white;
+}
+
+.card {
+    background-color: #d1c4E9;
+    width: 200 rem !important;
+}

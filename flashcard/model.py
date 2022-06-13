@@ -100,9 +100,12 @@ def list(page,id,limit=8):
     cards_list = builtin_list(map(from_sql, pagination.items))
     return pagination,cards_list
 
-def list_categories(page,limit=5):
+def list_categories(page,limit=10):
     pagination = List.query.filter_by(owner=session['sub']).paginate(page=page,per_page=limit)
     list = builtin_list(map(from_sql, pagination.items))
+    for item in list:
+        item['cnt'] = len(List.query.get(item['id']).texts)
+
     return pagination,list
         
 def get_lists():

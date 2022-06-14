@@ -1,4 +1,3 @@
-from crypt import methods
 from flashcard import model
 from flask import Blueprint, jsonify, redirect, render_template, request, url_for, json, abort,flash,session
 from .naver_credentials import headers

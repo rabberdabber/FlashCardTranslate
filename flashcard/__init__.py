@@ -24,7 +24,6 @@ load_dotenv(find_dotenv(sys.path[1]))
 
 def get_uri(form):
     uri_map = {}
-    
     uri_map[('GET','category')] = url_for('api.get_category',id=form.category_id.data)
     uri_map[('GET','categories')] = url_for('api.get_categories')
     uri_map[('GET','cards')] = url_for('api.get_cards',id=form.category_id.data)
@@ -34,8 +33,6 @@ def get_uri(form):
     uri_map[('POST','card_from_category')] = url_for('api.post_card_from_category',id=form.category_id.data)
     uri_map[('DELETE','card')] = url_for('api.delete_card',id=form.card_id.data)
     uri_map[('DELETE','category')] = url_for('api.delete_category',id=form.category_id.data)
-   
-    
     return uri_map.get((form.method.data,form.resource.data))
     
     
@@ -72,7 +69,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
         model._create_database()
         CORS(app)
 
-    app.config['SERVER_NAME'] = 'localhost:5555'
+    app.config['SERVER_NAME'] = 'localhost:8000'
     # Register blueprints.
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint, url_prefix='/flashcards')
@@ -119,11 +116,11 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
                 json_dict = {'word':form.word.data,'category_id':str(form.category_id.data),'source':form.source.data,'target':form.target.data,'owner':session['sub']}
                 
                 if form.method.data != 'POST':
-                    curl_string = '''curl -X {} http://localhost:5555{} -H "Content-Type:application/json" -H "Authorization: Bearer {}"
+                    curl_string = '''curl -X {} http://localhost:8000{} -H "Content-Type:application/json" -H "Authorization: Bearer {}"
                         '''.format(form.method.data,uri,session['id_token'])
                         
                 else:
-                    curl_string = '''curl -X {} http://localhost:5555{} -H "Content-Type:application/json" -H "Authorization: Bearer {}" -d '{}' '''.format(form.method.data,uri,session['id_token'],json.dumps(json_dict))
+                    curl_string = '''curl -X {} http://localhost:8000{} -H "Content-Type:application/json" -H "Authorization: Bearer {}" -d '{}' '''.format(form.method.data,uri,session['id_token'],json.dumps(json_dict))
             
                 if form.method.data == 'POST':
                     if form.resource.data not in ['category','card']:
@@ -148,7 +145,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
                                 "Accept": "application/json"
                           }
                 
-                url = 'http://localhost:5555'+uri
+                url = 'http://localhost:8000'+uri
                 
                 try:
                     if form.method.data == "POST":
@@ -198,7 +195,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
         session.clear()
         client_id = Config.AUTH0_CLIENTID
         domain = Config.AUTH0_DOMAIN
-        return_to = 'http://localhost:5555/'
+        return_to = 'http://localhost:8000/'
         return redirect(
             f'https://{domain}/v2/logout?client_id={client_id}&returnTo={return_to}',
             code=302,

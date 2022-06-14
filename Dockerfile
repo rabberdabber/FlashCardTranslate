@@ -2,14 +2,8 @@ FROM python:3.9-alpine
 WORKDIR /home/app
 
 COPY requirements.txt .
-RUN apk update && apk add python3-dev \
-    gcc \
-    libc-dev \
-    libffi-dev \
-    musl-dev \
-    openssl-dev \
-    cargo
-
+RUN apk update && apk add libffi-dev \
+                          cargo
 RUN pip install -r requirements.txt
 
 COPY flashcard flashcard

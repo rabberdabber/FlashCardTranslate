@@ -1,9 +1,10 @@
-FROM python:3.9-alpine
+FROM ubuntu:20.04
 WORKDIR /home/app
 
 COPY requirements.txt .
-RUN apk update && apk add libffi-dev \
-                          cargo
+RUN apt-get update
+RUN apt-get install -y python3.8
+RUN apt-get install -y python3-pip
 RUN pip install -r requirements.txt
 
 COPY flashcard flashcard

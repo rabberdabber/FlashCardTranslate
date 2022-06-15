@@ -152,11 +152,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
                         response = requests.post(url,headers=headers,json=json_dict)
                     else:
                         response = requests.request(form.method.data,url,headers=headers)
-                    if response.ok:
-                        print('ok')
-                        print(response.json())
-                    else:
-                        print('not ok')
+                
                     return render_template('api.html',form=form,curl_string=curl_string,response=response.json())
                 except:
                     flash('the given method failed')

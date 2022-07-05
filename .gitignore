@@ -2,3 +2,4 @@ config.py
 flashcard/naver_credentials.py
 flashcard/__pycache__
 __pycache__
+startapp.sh

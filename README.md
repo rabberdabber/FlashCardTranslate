@@ -13,16 +13,15 @@ Each user can create different categories with source and target language and ad
 https://rabberdabber.dpgon835n9iag.ap-northeast-2.cs.amazonlightsail.com/
 ```
 
-## DEMO
+## Description
 
 
 ## REST API
 
 This documentation aims to be a comprehensive aid in using the the REST API endpoints to get/add/delete cards in the categories. The API follows RESTful design principles & best practices.
 
----
 
-**user** - using language categories and flashcards_  
+**user** - using language categories and flashcards
 `create:category`
 `read:category`
 `delete:category`

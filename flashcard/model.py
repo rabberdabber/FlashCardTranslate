@@ -72,6 +72,8 @@ class List(db.Model):
         
         if source is None or target is None or not source in languages or not target in languages:
             return {'message': 'unsupported language'},True
+        elif source == target:
+            return {'message':'Source and target languages must be different'},True
         
         name = source + " -> " + target
         src_index = languages.index(source)
@@ -137,7 +139,7 @@ def get_card_id(word):
     card = Text.query.filter_by(word=word).first()
     if card:
         list = get_list(card.list_id)
-        return card.id if card.owner == session['sub'] else None
+        return card.id if list.owner == session['sub'] else None
     return None
 
 def get_card(id):
@@ -169,7 +171,6 @@ def create_list(data):
     error = False
     body = {}
     list = None
-    print(data)
     try:
         list = List(**data)
         db.session.add(list)
@@ -204,7 +205,6 @@ def delete_list(list_id):
     error = False
     try:
         list = List.query.filter_by(owner=session['sub']).filter_by(id=list_id).first()
-        print(list)
         for text in list.texts:
             db.session.delete(text)
 

@@ -63,7 +63,6 @@ def get_translation(data,id):
 @requires_login()
 def list():
     page = request.args.get('page', 1, type=int)
-    print('before session list_categories ',session['sub'])
     pagination,lists = model.list_categories(page)
      
     form = LanguageForm() 
@@ -110,15 +109,12 @@ def view_card(id):
 @main.route('/categories/<int:id>/cards', methods=['POST'])
 @requires_login()
 def create_card(id):
-    print("created")
     data = {}
     form = WordForm()
     data['word'] = form.text.data
     
     if form.add.data:
-        print(data['word'])
         get_translation(data,id)
-        print(data['word_translation'])
         card = model.create_card(data)
     
         if card is None:
@@ -128,7 +124,6 @@ def create_card(id):
         
     elif form.search.data:
         card_id = model.get_card_id(data['word'])
-        print(card_id)
         if card_id:
             return redirect(url_for('.view_card',id=card_id))
         else:
@@ -159,7 +154,6 @@ def create_categories():
         data['name'] = name
         data['code'] = src + "->" + target
         data['owner'] = session['sub']
-        print(data['owner'])
         
         if id is not None:
             msg = "the category " + name + " already exists, could search it instead"
@@ -183,7 +177,7 @@ def create_categories():
         
     elif form.delete.data:
         if id is not None:
-            return delete_category(id)
+            delete_category(id)
         else:
             flash('the category does not exist, you can add it instead')
         
@@ -193,7 +187,6 @@ def create_categories():
 @main.route('/cards/<int:id>', methods=['DELETE'])
 @requires_login()
 def delete(id):
-    print("going to delete ",id)
     error = model.delete_card(id)
     
     if error:
@@ -207,7 +200,6 @@ def delete(id):
 def delete_category(id):
     error = False
     list = model.get_list(id)
-    print(list)
     name = list.name
     error = model.delete_list(id)
     

@@ -1,9 +1,25 @@
 {% extends "cards.html" %}
 
+{% block navigator%}
+    <ul class="navbar-nav mr-auto">
+        <li class="nav-item active"><a class="nav-link" href="../categories"><span class="fa fa-home fa-lg">
+                </span>Home</a></li>
+        <li class="nav-item"><a class="nav-link" href="../../contact.html"><span
+                    class="fa fa-info fa-lg"></span>Contact</a></li>
+    </ul>
+
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item"><a class="nav-link" href="{{url_for('api_test')}}"><span
+                    class="fa fa-info fa-lg"></span>API</a></li>
+        <li class="nav-item"><a class="nav-link" href="{{url_for('logout')}}"><span
+                    class="fa fa-sign-out fa-lg"></span>Logout</li>
+    </ul>
+{% endblock %}
+
 {% block crumbs %}
     
     <ol class="col-12 breadcrumb">
-        <li class="breadcrumb-item"><a href="/categories">Home</a></li>
+        <li class="breadcrumb-item"><a href="../categories">Home</a></li>
         <li class="breadcrumb-item"><a href="../categories/{{active_list.id}}/cards">Cards</a></li>
         <li class="breadcrumb-item active"> Searched Cards</li>
     </ol>

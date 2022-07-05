@@ -130,7 +130,6 @@ def post_category(payload):
     
     if request.json:
         data = request.json
-        print(data)
         result,error = model.List.from_json(data)
 
         if not error:
@@ -141,6 +140,8 @@ def post_category(payload):
             return jsonify(response),201
         else:
             result["success"] = False
+            if data['source'] == data['target']:
+                return jsonify(result),400
             id = model.get_id(data['source'] + ' -> ' + data['target'])
             result['category_id'] = id
             if result['message'] == 'category already exists':

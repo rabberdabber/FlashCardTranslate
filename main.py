@@ -1,7 +1,6 @@
 import flashcard
 import sys 
 from dotenv import load_dotenv,find_dotenv
-print(load_dotenv(find_dotenv()))
 
 app = flashcard.create_app()
 

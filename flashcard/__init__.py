@@ -40,7 +40,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
     app = Flask(__name__)
     app.config.from_object(config)
     app.secret_key = 'rabb911ay'
-    print(config.AUTH0_DOMAIN)
+ 
     app.debug = debug
     app.testing = testing
     Bootstrap(app)
@@ -69,7 +69,8 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
         model._create_database()
         CORS(app)
 
-    app.config['SERVER_NAME'] = 'localhost:8000'
+    app.config['SERVER_NAME'] = 'rabberdabber.dpgon835n9iag.ap-northeast-2.cs.amazonlightsail.com'
+
     # Register blueprints.
     from .main import main as main_blueprint
     app.register_blueprint(main_blueprint, url_prefix='/flashcards')
@@ -106,7 +107,6 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
         
         else:
             if form.validate_on_submit():
-                print('apiform validated')
                 uri = get_uri(form)
             
                 if not uri:
@@ -116,11 +116,11 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
                 json_dict = {'word':form.word.data,'category_id':str(form.category_id.data),'source':form.source.data,'target':form.target.data,'owner':session['sub']}
                 
                 if form.method.data != 'POST':
-                    curl_string = '''curl -X {} http://localhost:8000{} -H "Content-Type:application/json" -H "Authorization: Bearer {}"
+                    curl_string = '''curl -X {} https://rabberdabber.dpgon835n9iag.ap-northeast-2.cs.amazonlightsail.com{} -H "Content-Type:application/json" -H "Authorization: Bearer {}"
                         '''.format(form.method.data,uri,session['id_token'])
                         
                 else:
-                    curl_string = '''curl -X {} http://localhost:8000{} -H "Content-Type:application/json" -H "Authorization: Bearer {}" -d '{}' '''.format(form.method.data,uri,session['id_token'],json.dumps(json_dict))
+                    curl_string = '''curl -X {} https://rabberdabber.dpgon835n9iag.ap-northeast-2.cs.amazonlightsail.com{} -H "Content-Type:application/json" -H "Authorization: Bearer {}" -d '{}' '''.format(form.method.data,uri,session['id_token'],json.dumps(json_dict))
             
                 if form.method.data == 'POST':
                     if form.resource.data not in ['category','card']:
@@ -145,7 +145,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
                                 "Accept": "application/json"
                           }
                 
-                url = 'http://localhost:8000'+uri
+                url = 'https://rabberdabber.dpgon835n9iag.ap-northeast-2.cs.amazonlightsail.com'+uri
                 
                 try:
                     if form.method.data == "POST":
@@ -160,7 +160,6 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
         
             else:
                 flash('not a valid input')
-                print(form.errors.items())
                 return render_template('api.html',form=form,id_token=session['id_token'])
             
     
@@ -181,7 +180,6 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
          
         session['sub'] = token.get('userinfo').get('sub')
         session['id_token'] = token.get('id_token')
-        print(session)
         return redirect(url_for('main.list'))
     
 
@@ -191,7 +189,7 @@ def create_app(config=Config, debug=False, testing=False, config_overrides=None)
         session.clear()
         client_id = Config.AUTH0_CLIENTID
         domain = Config.AUTH0_DOMAIN
-        return_to = 'http://localhost:8000/'
+        return_to = 'https://rabberdabber.dpgon835n9iag.ap-northeast-2.cs.amazonlightsail.com/'
         return redirect(
             f'https://{domain}/v2/logout?client_id={client_id}&returnTo={return_to}',
             code=302,

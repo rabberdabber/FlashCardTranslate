@@ -8,13 +8,13 @@ Each user can create different categories with source and target language and ad
 ## DEMO
 ![DemoGIF](./FlashCardTranslate.gif)
 
-## Application URL
-```
-https://rabberdabber.dpgon835n9iag.ap-northeast-2.cs.amazonlightsail.com/
-```
+## Application Links
+
+- [Link to FlashCardTranslate](https://rabberdabber.dpgon835n9iag.ap-northeast-2.cs.amazonlightsail.com/) 
+- [DEMO VIDEO ON YOUTUBE](https://www.youtube.com/watch?v=5PazVSe5JI8&t=4s&ab_channel=bereketsiyum)
 
 ## Description
-
+FlashCardTranslate is a database-backed application so Create,Read,Update,Delete(CRUD) operations are applied to save,read,delete the flashcards. I used a PostgreSQL Database to Save the Categories and Flashcard contents . Also IAM(Identity Access Management) is used for authentication and authorization of users.Specifically I used AUTH0's API and authlib python library. It is also a RESTful application as we can use endpoints to manipulate the flashcards or database but each user will be given specific JWT tokens for the REST API after login for authorization sake. Test Driven Development(TDD) is employed to test the REST API each time there is a change in the application. Finally, I used docker to containerize the Flask Application along with gunicorn server and deployed it on AWS.
 
 ## REST API
 
@@ -47,7 +47,7 @@ This documentation aims to be a comprehensive aid in using the the REST API endp
 
 ## Endpoints in detail
 
-*You can check the REST api in the API navigation bar after you login to the application. the REST api requires tokens as the application uses IAM(Identification Access Management)*
+*You can check the REST api in the API navigation bar after you login to the application. the REST api requires JWT tokens as the application employs IAM(Identification Access Management) to authenticate and authorize users*
 
 
 ## Authors

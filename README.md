@@ -64,6 +64,11 @@ This documentation aims to be a comprehensive aid in using the the REST API endp
 [`DELETE /cards/:id/json`](#delete-cardsid) 
 
 ## Endpoints in detail
+![Screen Shot 2022-07-06 at 11 16 41 PM](https://user-images.githubusercontent.com/60803336/177572642-a62998f1-c032-44d4-bc66-9246d0ee5564.png)
+![Screen Shot 2022-07-06 at 11 18 24 PM](https://user-images.githubusercontent.com/60803336/177572689-42e59e1c-aabb-4c36-a129-3d95ee0025da.png)
+![Screen Shot 2022-07-06 at 11 18 48 PM](https://user-images.githubusercontent.com/60803336/177572702-0deb1360-d84d-4df4-ae56-9ef4a51381a4.png)
+![Screen Shot 2022-07-06 at 11 18 48 PM](https://user-images.githubusercontent.com/60803336/177573541-94bb01a5-0b26-4426-8391-c988befa0da7.png)
+![Screen Shot 2022-07-06 at 11 16 41 PM](https://user-images.githubusercontent.com/60803336/177573576-f7e8ed99-c0a0-49b4-bff8-e609958c42e5.png)
 
 *You can check the REST api in the API navigation bar after you login to the application. the REST api requires JWT tokens as the application employs IAM(Identification Access Management) to authenticate and authorize users*
 

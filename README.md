@@ -20,6 +20,9 @@ Each user can create different categories with source and target language and ad
 - Test Driven Development(TDD) is employed to test the REST API each time there is a change in the application. 
 - Finally, I used docker to containerize the Flask Application along with gunicorn server and deployed it on AWS.
 
+![Screen Shot 2022-07-06 at 2 22 46 PM](https://user-images.githubusercontent.com/60803336/177474975-d9ea3ffe-d600-430b-bda8-82aa629504dc.png)
+
+
 ## REST API
 
 This documentation aims to be a comprehensive aid in using the the REST API endpoints to get/add/delete cards in the categories. The API follows RESTful design principles & best practices.

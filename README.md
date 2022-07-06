@@ -4,8 +4,8 @@ Welcome to FlashCardTranslate, A Flask Web Application that saves language flash
 
 Each user can create different categories with source and target language and add flashcards to those categories.
 
-[![SkillIcons](https://skillicons.dev/icons?i=js,ts,html,css,nodejs,py,tailwind,vue,nuxt,mongodb,prisma,docker,figma)](https://skillicons.dev)<br/>
-[![PyPI - Python](https://img.shields.io/pypi/pyversions/iconsdk?logo=pypi)](https://pypi.org/project/iconsdk)
+[![SkillIcons](https://skillicons.dev/icons?i=py,js,html,css,nodejs,py,docker,aws)](https://skillicons.dev)<br/>
+
 
 ## DEMO
 ![DemoGIF](./FlashCardTranslate.gif)
@@ -20,7 +20,7 @@ Each user can create different categories with source and target language and ad
 - IAM(Identity Access Management) is used for authentication and authorization of users.Specifically I used AUTH0's API and authlib python library. 
 - It is also a RESTful application as we can use endpoints to manipulate the flashcards or database but each user will be given specific JWT tokens for the REST API after login for authorization sake. 
 - Test Driven Development(TDD) using python unittest is employed to test the REST API each time there is a change in the application. 
-- I used HTML/CSS and Bootstrap to make minimal UI.
+- I used HTML/CSS/Javascript and Bootstrap to make minimal UI.
 - Finally, I used docker to containerize the Flask Application along with gunicorn server and deployed it on AWS.
 
 ![Screen Shot 2022-07-06 at 2 22 46 PM](https://user-images.githubusercontent.com/60803336/177474975-d9ea3ffe-d600-430b-bda8-82aa629504dc.png)

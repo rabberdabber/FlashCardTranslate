@@ -4,7 +4,8 @@ Welcome to FlashCardTranslate, A Flask Web Application that saves language flash
 
 Each user can create different categories with source and target language and add flashcards to those categories.
 
-[![SkillIcons](https://skillicons.dev/icons?i=py,js,html,css,nodejs,py,docker,aws)](https://skillicons.dev)<br/>
+# Used Languages,Frameworks and technologies
+[![SkillIcons](https://skillicons.dev/icons?i=py,js,html,css,docker,aws)](https://skillicons.dev)<br/>
 
 
 ## DEMO

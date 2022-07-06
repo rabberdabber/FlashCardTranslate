@@ -64,7 +64,7 @@ This documentation aims to be a comprehensive aid in using the the REST API endp
 [`DELETE /cards/:id/json`](#delete-cardsid) 
 
 ## Endpoints in detail
--To get all categories choose GET categories and leave others as they are. Below is a sample request.
+- To get all categories choose GET categories and leave others as they are. Below is a sample request.
 ![Screen Shot 2022-07-06 at 11 16 41 PM](https://user-images.githubusercontent.com/60803336/177572642-a62998f1-c032-44d4-bc66-9246d0ee5564.png)
 - To post a category choose POST category and also input source and target languages. Below is a sample request.
 ![Screen Shot 2022-07-06 at 11 18 24 PM](https://user-images.githubusercontent.com/60803336/177572689-42e59e1c-aabb-4c36-a129-3d95ee0025da.png)

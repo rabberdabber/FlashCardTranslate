@@ -66,10 +66,25 @@ This documentation aims to be a comprehensive aid in using the the REST API endp
 ## Endpoints in detail
 - To get all categories choose GET categories and leave others as they are. Below is a sample request.
 ![Screen Shot 2022-07-06 at 11 16 41 PM](https://user-images.githubusercontent.com/60803336/177572642-a62998f1-c032-44d4-bc66-9246d0ee5564.png)
+
 - To post a category choose POST category and also input source and target languages. Below is a sample request.
 ![Screen Shot 2022-07-06 at 11 18 24 PM](https://user-images.githubusercontent.com/60803336/177572689-42e59e1c-aabb-4c36-a129-3d95ee0025da.png)
+
+- After posting category, we can see that new category is created as below.
+![Screen Shot 2022-07-06 at 11 19 06 PM](https://user-images.githubusercontent.com/60803336/177575232-f4346d5b-547a-4482-a6a2-24f0547c8d15.png)
+ 
 - To post a card choose POST card and also input source and language target and word. Below is a sample request.
 ![Screen Shot 2022-07-06 at 11 18 48 PM](https://user-images.githubusercontent.com/60803336/177572702-0deb1360-d84d-4df4-ae56-9ef4a51381a4.png)
+
+- After posting a flashcard, we can see that new flashcard with a word hello is created as below.
+![Screen Shot 2022-07-06 at 11 19 18 PM](https://user-images.githubusercontent.com/60803336/177575514-68be82c2-dcf0-4623-ab58-8bf287345f18.png)
+
+- To delete a category choose DELETE category and also input category ID. Below is a sample request.
+![Screen Shot 2022-07-06 at 11 24 16 PM](https://user-images.githubusercontent.com/60803336/177575670-46163268-e9a7-4724-82b5-59124e668473.png)
+
+- As we can see, the category is deleted.
+![Screen Shot 2022-07-06 at 11 24 29 PM](https://user-images.githubusercontent.com/60803336/177575689-2a8bd63c-9f60-4d1c-87d3-394a6d4e6f3e.png)
+
 
 
 *You can check the REST api in the API navigation bar after you login to the application. the REST api requires JWT tokens as the application employs IAM(Identification Access Management) to authenticate and authorize users*
